@@ -1,0 +1,21 @@
+.brush .extent {
+  stroke: gray;
+  fill: dodgerblue;
+  fill-opacity: .365;
+}
+.axis {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px;
+  font: 9px sans-serif; 
+}
+
+.panel {
+  outline: 1px solid gray;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-radius:5px;
+}
+.chart {
+  shape-rendering: crispEdges;
+}
