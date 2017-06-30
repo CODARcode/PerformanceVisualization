@@ -1,6 +1,6 @@
 //The data is stored here. Including traces, messages, and profiles.
 //The traces and profiles are stored in their threads(nodes).
-class Traces {
+class Data {
 	constructor(noThreads){
 		var me = this;
 		this.regions = ["TAU_USER", "TAU_DEFAULT", "TAU_CALLPATH",
@@ -8,7 +8,7 @@ class Traces {
 		this.noThreads = noThreads;
 		//this.timeStamps = {min:0,max:6310000,start:0, end:6310000};
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:0,max:2740000,start:0, end:2740000};
+		this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
@@ -28,8 +28,8 @@ class Traces {
 				console.log(event["node-id"]);
 			}
 			if(event["event-type"] == "exit"){
-				var startTime = 0;
-				if(stack[stack.length - 1].name == event.name){
+				var startTime = me.timeStamps.start;
+				if(stack.length >= 1&&stack[stack.length - 1].name == event.name){
 					startTime = stack[stack.length - 1].time;
 					stack.pop();
 				}

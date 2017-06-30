@@ -1,7 +1,7 @@
 //--------------------Main function--------------------
 class Main {
     constructor() {
-        this.traces = new Traces(5);
+        this.traces = new Data(5);
 
         this.c20 = d3.scale.category20().domain(this.traces.regions);
         this.overview = new Overview(this);
