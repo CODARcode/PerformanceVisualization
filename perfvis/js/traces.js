@@ -1,53 +1,46 @@
+//The data is stored here. Including traces, messages, and profiles.
+//The traces and profiles are stored in their threads(nodes).
 class Traces {
 	constructor(noThreads){
 		var me = this;
-
+		this.regions = ["TAU_USER", "TAU_DEFAULT", "TAU_CALLPATH",
+                "MPI","Others"];
 		this.noThreads = noThreads;
-
-		//this.timeStamps = {min:0,max:54251700,start:0, end:54251700};
-		this.timeStamps = {min:0,max:54251700,start:0, end:5425170};
-
-		this.states = {};
-		this.regions = [];
-
+		//this.timeStamps = {min:0,max:6310000,start:0, end:6310000};
+		this.timeStamps = {min:0,max:2740000,start:0, end:2740000};
 		this.threads = [];
-
 		for(var i = 0;i<noThreads;i++){
 		    me.threads.push(new Thread(i));
 		}
-	}
+		this.messages = [];
 
-    setStates(states){
-    	var me = this;
-        states.forEach(function(state){
-            me.states[state.name] = parseInt(state["group-id"]);
-            me.regions.push(state.name);
-        });
-    }
+	}
 
 	setTraces(traceObjs){
 		var me = this;
 		var stack = [];
-		var level = 0;		traceObjs.forEach(function(event){
+		var level = [0,0,0,0,0];
+		traceObjs.forEach(function(event){
+			var threadId = parseInt(event["node-id"]);
+			if(threadId === undefined){
+				console.log(event["node-id"]);
+			}
 			if(event["event-type"] == "exit"){
 				var startTime = 0;
 				if(stack[stack.length - 1].name == event.name){
 					startTime = stack[stack.length - 1].time;
 					stack.pop();
 				}
-				if(me.threads[me.states[event.name]-1] === undefined){
-					console.log(me.states[event.name]);
-				}
-		    	me.threads[me.states[event.name]-1].traces.push({
+		    	me.threads[threadId].traces.push({
 		        	"start": startTime,
 		        	"end": event.time,
 		        	"region": event.name,
-		        	"level": level
+		        	"level": level[threadId]
 		    	});
-		    	level--;
+		    	level[threadId]--;
 			}else if(event["event-type"] == "entry"){
 				stack.push(event);
-				level++;
+				level[threadId]++;
 			}else if (event["event-type"] == "counter"||event["event-type"] == "trace end"){
 			}else{
 			    console.log("ERROR! "+event["event-type"]);
@@ -55,13 +48,14 @@ class Traces {
 		});
 		while(stack.length>0){
 			var event = stack.pop();
-			me.threads[me.states[event.name]-1].traces.push({
+			var threadId = parseInt(event["node-id"]);
+			me.threads[threadId].traces.push({
 		        "start": event.time,
 		        "end": me.timeStamps.end,
 		        "region": event.name,
-		        "level": level
+		        "level": level[threadId]
 		    });
-		    level--;
+		    level[threadId]--;
 		}
 
 		function compare(a,b) {
@@ -74,6 +68,10 @@ class Traces {
 		me.threads.forEach(function(thread){
 			thread.traces.sort(compare);
 		});
+	}
+
+	setMessages(messages){
+		this.messages = messages;
 	}
 
 	setProfiles(profiles, isTimer){

@@ -1,3 +1,4 @@
+// The transition data for different stages of the trace_events. Now it is unused.
 class Transition{
 	constructor(tid, links, noThreads1, noThreads2){
 		var me  = this;

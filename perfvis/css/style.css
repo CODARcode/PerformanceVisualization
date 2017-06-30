@@ -10,6 +10,13 @@
   font: 9px sans-serif; 
 }
 
+.legend {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px;
+  font: 9px sans-serif; 
+}
+
 .panel {
   outline: 1px solid gray;
   padding-top: 10px;

@@ -1,4 +1,4 @@
-//----------------------data-----------------------
+//The thread of the trace_events, in the sample datasets it is used as a node in a thread.
 class Thread {
     constructor(lid, profiles) {
     	//data

@@ -1,23 +1,19 @@
 /**
  * Created by wxu on 2/15/17.
  */
-//--------------------trace visualization---------------------
+//This visualization uses nested rectangles to show the call paths of the functions.
 class TraceVis {
-    constructor(main) {
+    constructor(main, parentview, ypos) {
         var me = this;
         this.timeBegin = main.traces.timeStamps.start;
         this.timeEnd = main.traces.timeStamps.end;
         this.noThreads = main.traces.threads.length;
 
         this.main = main;
-        var bb = document.querySelector('#TimelinePlot')
-                    .getBoundingClientRect();
-        var twidth = bb.right - bb.left;
-        var theight = 450;
-        this.m = [20, 50, 0, 10, 0]; //top right bottom left (space between main and mini)
-        this.w = twidth - this.m[1] - this.m[3];
-        this.h = theight - this.m[0] - this.m[2];
-        this.mainHeight = this.h - this.m[4]; //has space between
+        this.m = [20, 50, 0, 30]; //top right bottom left (space between main and mini)
+
+        this.w = parentview.w - parentview.leftMargin;
+        this.mainHeight = 500; //has space between
         //scales
         this.x = d3.scale.linear()
             .domain([this.timeBegin, this.timeEnd])
@@ -27,25 +23,19 @@ class TraceVis {
             .range([0, this.w]); //main
         this.y1 = d3.scale.linear()
             .domain([0, this.noThreads])
-            .range([0, this.mainHeight]); //main
+            .range([20, this.mainHeight+20]); //main
         this.y2 = d3.scale.linear()
             .domain([0, this.noThreads])
-            .range([0, this.miniHeight]); //mini
+            .range([20, this.miniHeight+20]); //mini
         //axis
         this.mainAxis = d3.svg.axis()
             .scale(this.x1)
-            .orient("top");
-        //color
-        this.c20 = d3.scale.category20().domain(main.traces.regions);
-
+            .orient("bottom");
         this.mouseOverPos;
 
         //chart
-        var chart = d3.select("#TimelinePlot")
-            .append("svg")
-            .attr("width", this.w + this.m[1] + this.m[3])
-            .attr("height", this.h + this.m[0] + this.m[2])
-            .attr("class", "chart");
+        var chart = parentview.chart.append("g")
+            .attr("transform", "translate(0," + ypos + ")");
 
         chart.append("defs").append("clipPath")
             .attr("id", "clip")
@@ -54,7 +44,7 @@ class TraceVis {
             .attr("height", this.mainHeight);
 
         this.mainCanvas = chart.append("g")
-            .attr("transform", "translate(" + this.m[3] + "," + this.m[0] + ")")
+            .attr("transform", "translate("+parentview.leftMargin+",0)")
             .attr("width", this.w)
             .attr("height", this.mainHeight)
             .attr("class", "main");
@@ -68,11 +58,15 @@ class TraceVis {
         this.brush = d3.svg.brush()
             .x(this.x1)
             .y(this.y1)
+            .on("brush", function() {
+                me.mousebrush.style("visibility","visible");
+            })
             .on("brushend", function() {
                 var extent = me.brush.extent();
                 me.main.update(extent);
+                me.mousebrush.style("visibility","hidden");
             });
-        this.mainCanvas.append("g")
+        this.mousebrush =  this.mainCanvas.append("g")
             .attr("class", "x brush")
             .call(this.brush);
 
@@ -99,6 +93,7 @@ class TraceVis {
 		me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
 
         //this.mainCanvas.selectAll("g.x brush").remove();
+        
         //brush
         this.brush
             .x(this.x1)
@@ -108,9 +103,20 @@ class TraceVis {
     updateThread(thread, brush) {
 		var me = this;
 		var locSets = thread.locSets;
-            
-        //update main item rects
+                //update main item rects
         //thread.itemRect.selectAll("rect").remove(); //---to be fixed---
+
+
+        var id = this.mainCanvas.selectAll("idLabel").data([thread.location]);
+        id.enter().append("text")
+            .text(thread.location)
+            .attr("x",-20)
+            .attr("y", function(){
+                return me.y1(thread.location)+40;
+            })
+            .attr("font-size", "16px")
+            .attr("font-family", "sans-serif");
+        id.exit().remove();
 
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems) //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
@@ -124,10 +130,10 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                return mainHeight * .8 / me.localLocLength - d.level * 4;// / locSets.length;
+                return mainHeight * .8 / me.localLocLength - d.level * 5;// / locSets.length;
             })
             .attr("fill", function(d) {
-                return me.c20(d.region);
+                return me.main.getColor(d.region);
             });
 
         rects.enter().append("rect") //only re-enter updated rect!!!
@@ -144,16 +150,32 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                return me.mainHeight * .8 / me.localLocLength - d.level * 4;// / locSets.length;
+                var thisHeight = me.mainHeight * .8 / me.localLocLength - d.level * 5;
+                if(thisHeight<5){
+                    thisHeight = 5;
+                }
+                return thisHeight;// / locSets.length;
             })
             .attr("fill", function(d) {
-                return me.c20(d.region);
+                return me.main.getColor(d.region);
+            })
+            .attr("stroke","black")
+            .attr("stroke-width",function(){
+                if((brush.x1 - brush.x0)<3000){
+                    return "0.5px";
+                }else{
+                    return 0;
+                }
+            })
+            .attr("opacity", function(d){
+                return (d.region.length+110)/(120+d.region.length);
             })
             .on("mouseover", function(d) {
                 me.mouseOverPos = d;
-            }).append("title") //asynch mode may generate different brush extents
+            })
+            .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
-                return d.region + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+                return d.region;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
 
         rects.exit().remove();

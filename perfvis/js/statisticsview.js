@@ -1,3 +1,4 @@
+//Statistic view shows the summarized execution time of the functions in the selected time range
 class StatisticsVis{
 	constructor(main){
 		
@@ -7,23 +8,22 @@ class StatisticsVis{
         this.noThreads = main.traces.threads.length;
         // chart for metedata
 
+        this.main = main;
         var bb = document.querySelector('#Statistics')
                     .getBoundingClientRect();
         var mwidth = bb.right - bb.left;
-        var mheight = 450;
-        this.mm = [20, 20, 5, 15, 80]; //top right bottom left (space for label texts)
+        var mheight = 500;
+        this.mm = [20, 20, 5, 15, 120]; //top right bottom left (space for label texts)
         this.metaw = mwidth - this.mm[1] - this.mm[3];
         this.metah = mheight - this.mm[0] - this.mm[2];
-        this.metaHeight = this.metah - this.mm[4];
-
-        this.c20 = d3.scale.category20().domain(main.traces.regions);
+        this.metaHeight = this.metah;
         //scale
         this.y1 = d3.scale.linear()
             .domain([0, this.noThreads])
             .range([0, this.metah]); //main
         this.metax = d3.scale.linear()
             .domain([0, this.timeEnd - this.timeBegin])
-            .range([0, this.metaw - this.mm[4]]); //metamain, leave space for text
+            .range([0, this.metaw- this.mm[4]]); //metamain, leave space for text
 
         //axis
         this.metaAxis = d3.svg.axis()
@@ -81,7 +81,7 @@ class StatisticsVis{
                 return metaHeight * .8 / me.localLocLength / locSets.length;
             })
             .attr("fill", function(d) {
-                return me.c20(d);
+                return me.main.getColor(d);
             });
 
         bars.enter().append("rect")
@@ -97,13 +97,14 @@ class StatisticsVis{
                 return me.metaHeight * .8 / me.localLocLength / locSets.length;
             })
             .attr("fill", function(d) {
-                return me.c20(d);
+                return me.main.getColor(d);
             })
             .on("mouseover", function(d) {
                 me.mouseOverPos = d;
             }).append("title")
             .text(function(d) {
-                return d + ": " + locMaps.get(d);
+                var spstr = d.split("=>").slice(-1)[0];
+                return spstr + ": " + locMaps.get(d);
             });
 
         bars.exit().remove()
@@ -125,7 +126,8 @@ class StatisticsVis{
 
         labels.enter().append("text")
             .text(function(d) {
-                return d;
+                var spstr = d.split("=>").slice(-1)[0];
+                return spstr;
             })
             .attr("x", me.mm[4] - 2)
             .attr("y", function(d) {

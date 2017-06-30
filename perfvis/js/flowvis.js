@@ -1,3 +1,4 @@
+// The transition visualization for different stages of the trace_events. Now it is unused.
 class FlowVis {
     constructor(transition, overview, main, xstart, flowWidth) {
       var me = this;

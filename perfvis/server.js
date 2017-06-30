@@ -1,20 +1,22 @@
+//The server file which query the mongodb and return the json objects to the front end.
 var http = require("http"),
     url = require("url"),
     path = require("path"),
     fs = require("fs"),
     port = process.argv[2] || 8888;
 var MongoClient = require('mongodb').MongoClient;
-var dburl = "mongodb://localhost:27017/codar";
+var dburl = "mongodb://localhost:27017/codarvis";
 
 http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname,
         filename = path.join(process.cwd(), uri);
 
-    if (uri.substring(0, 7) == "/states"){
-        query("states",{},response);
+    if (uri.substring(0, 10) == "/messages/"){
+        var timestamps = uri.substring(10).split(":");
+        query("messages",{timestamp:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
     } else if (uri.substring(0, 8) == "/events/"){
         var timestamps = uri.substring(8).split(":");
-        query("trace_events",{},response)//time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}
+        query("trace_events",{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);
@@ -59,41 +61,12 @@ function query(dbName, queryObj, response){
             response.writeHead(200, {
                 "Content-Type": "text/json"
             });
+            //console.log(result);
             response.end(JSON.stringify(result));
             console.log("Get "+result.length+" documents from "+dbName);
             db.close();
         });
     });
 }
-
-/*function queryStates(response) {
-    MongoClient.connect(dburl, function(err, db) {
-        if (err) throw err;
-        db.collection("states").find().toArray(function(err, result) {
-            if (err) throw err;
-            response.writeHead(200, {
-                "Content-Type": "text/json"
-            });
-            response.end(JSON.stringify(result));
-            //console.log(result);
-            db.close();
-        });
-    });
-}
-
-function queryEvents(startTime, endTime, response) {
-    var queryObj = {time:{$gte:startTime,$lte:endTime}};
-    MongoClient.connect(dburl, function(err, db) {
-        if (err) throw err;
-        db.collection("trace_events").find(queryObj).toArray(function(err, result) {
-            if (err) throw err;
-            response.writeHead(200, {
-                "Content-Type": "text/json"
-            });
-            response.end(JSON.stringify(result));
-            db.close();
-        });
-    });
-}*/
 
 console.log("Server running on http://localhost:" + port + "/");

@@ -1,20 +1,19 @@
+//Profile visualizrion shows the profile informaiton, which visualize the metrics of timers and counters.
+
 class ProfileVis {
     constructor(main) {
         var me = this;
-        var threads = main.traces.threads;
-        this.noThreads = threads.length;
+        this.main = main;
+        this.noThreads = main.traces.threads.length;
         var bb = document.querySelector('#Profiles')
             .getBoundingClientRect();
         var twidth = bb.right - bb.left;
         var theight = 450;
-        this.m = [20, 90, 0, 10, 0]; //top right bottom left (space between main and mini)
+        this.m = [20, 90, 0, 90, 0]; //top right bottom left (space between main and mini)
         this.w = twidth - this.m[1] - this.m[3];
         this.h = theight - this.m[0] - this.m[2];
         this.height = this.h - this.m[4]; //has space between
 		this.measure = "Num Events";
-
-        //color
-        this.c20 = d3.scale.category20().domain(main.traces.regions);
 
         var formatPercent = d3.format(".0%");
         this.x = d3.scale.linear()
@@ -60,6 +59,21 @@ class ProfileVis {
 		var me = this;
 		var barheight = 100;
 
+        var id = this.svg.selectAll("idLabel").data([thread.location])
+        .attr("x",-20)
+        .attr("y", function(){
+            return me.y(thread.location);
+        });
+        id.enter().append("text")
+            .text(thread.location)
+            .attr("x",-20)
+            .attr("y", function(){
+                return me.y(thread.location)+40;
+            })
+            .attr("font-size", "16px") 
+            .attr("font-family", "sans-serif");
+        id.exit().remove();
+
         thread.groups.selectAll("rect")
             .data(function(d){return d;})
             .enter()
@@ -84,7 +98,7 @@ class ProfileVis {
                 var xPosition = d3.mouse(this)[0] - 15;
                 var yPosition = d3.mouse(this)[1] - 25;
                 thread.tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-                thread.tooltip.select("text").text(d.path + ":" + parseFloat(Math.round(d.y * 100)) + "%");
+                thread.tooltip.select("text").text(d.name + ":" + d.y);
             });
 
 
@@ -123,7 +137,7 @@ class ProfileVis {
             count[i] = 0;
         })
 
-        thread.stacks = d3.layout.stack()(Object.keys(profiles).map(function(d) {
+        thread.stacks = d3.layout.stack()(Object.keys(profiles).map(function(d,i) {
             var arr = d.split("=>");
             var region = arr[arr.length - 1];
             var index = regions.indexOf(region);
@@ -134,7 +148,8 @@ class ProfileVis {
                 index: index,
                 count: count[index],
                 x: thread.location,
-                y: +(profiles[d][me.measure])
+                y: +(profiles[d][me.measure]),
+                colorIndex: i
             }];
         }));
         //console.log(me.measure);
@@ -146,7 +161,7 @@ class ProfileVis {
             .enter().append("g")
             .attr("class", "thread" + thread.location)
             .style("fill", function(d) {
-                return me.c20(d[0].name)
+                return me.main.getTwoColor(d[0].colorIndex);//(d[0].path);
             })
             .style("opacity", function(d) {
                 return 1.0 * d[0].count / count[d[0].index];

@@ -1,27 +1,37 @@
 //--------------------Main function--------------------
 class Main {
     constructor() {
-        this.traces = new Traces(6);
-        this.overview = {};
-        this.tracevis = {};
-        this.profilevis = {};
-        this.statisticsvis = {};
-        this.traceObjs = {};
-        this.statesReady = false;
-        this.eventsReady = false;
+        this.traces = new Traces(5);
 
-        this.sendQuery("states", this.getStates);
-        this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);
-        this.sendQuery("profiles/0", this.getProfiles);
-        this.sendQuery("profiles/1", this.getProfiles);
+        this.c20 = d3.scale.category20().domain(this.traces.regions);
+        this.overview = new Overview(this);
+        this.detailview = new Detailview(this);
+        this.profilevis = new ProfileVis(this);
+        this.statisticsvis = new StatisticsVis(this);
+        this.legend = new Legend(this);
+
+        this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
+        this.sendQuery("profiles/0", this.getProfiles);//timers of the profiles.
+        this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.
+        this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
+    }
+    
+    getColor(name){
+        var me = this;
+        return me.c20(states[name]);
     }
 
-    updateData() {
-        if (this.statesReady && this.eventsReady) {
-            //console.log(this.traceObjs);
-            this.traces.setTraces(this.traceObjs);
-            this.initVisualization(); //-------------------------------------------
+    getTwoColor(index){
+        if(index%2==0){
+            return "Grey";
+        }else{
+            return "Gainsboro";
         }
+    }
+
+    getRegionColor(region){
+        var me = this;
+        return me.c20(region);
     }
 
     update(extent) {
@@ -39,40 +49,33 @@ class Main {
             y1: extent[1][1]
         };
 
-        this.tracevis.update(brush);
+        this.detailview.update(brush);
         this.profilevis.update(brush);
         this.statisticsvis.update(brush);
 
         this.traces.threads.forEach(function(thread) {
             thread.clear();
             thread.filter(brush);
-            me.tracevis.updateThread(thread, brush);
+            me.detailview.tracevis.updateThread(thread, brush);
             me.profilevis.updateThread(thread);
             me.statisticsvis.updateThread(thread);
         });
     }
 
-    initVisualization() {
+    init() {
         var me = this;
-        this.overview = new Overview(this);
-        this.tracevis = new TraceVis(this);
-        this.profilevis = new ProfileVis(this);
-        this.statisticsvis = new StatisticsVis(this);
+        this.overview.init();
+        this.detailview.init();
+        //this.overview.drawlegend(this.traces.regions);
 
-        this.overview.init(me, me.traces.regions);
-        this.overview.drawlegend(me.traces.regions);
         var profileMaxX = 0;
-
         this.traces.threads.forEach(function(thread) {
-            me.tracevis.init(thread);
             var thisSum = me.profilevis.init(thread, me.traces.regions, false);
             if (thisSum > profileMaxX) {
                 profileMaxX = thisSum;
             }
             me.statisticsvis.init(thread);
         });
-        me.overview.initBrush();
-        //console.log(profileMaxX);
         me.profilevis.setXAxis(profileMaxX);
 
         this.update([
@@ -92,21 +95,17 @@ class Main {
         }
         xmlhttp.send();
     }
-
-    getStates(me, obj, queryStr) {
-        me.traces.setStates(obj);
-        me.statesReady = true;
-        me.updateData();
-    }
     getEvents(me, obj, queryStr) {
-        me.traceObjs = obj;
-        me.eventsReady = true;
-        me.updateData();
+        me.traces.setTraces(obj);
+        me.init();    
+    }
+
+    getMessages(me, obj, queryStr){
+        me.traces.setMessages(obj);
     }
 
     getProfiles(me, obj, queryStr) {
-        var flag = (queryStr.substring(9) == "0");
-        me.traces.setProfiles(obj, flag);
+        me.traces.setProfiles(obj, (queryStr.substring(9) == "0"));
     }
 
     setMeasure(measure, isTimer){
@@ -127,8 +126,11 @@ class Main {
 }
 
 var main = new Main();
-
-$('.dropdown-inverse li > a').click(function(e) {
+$('.fir li > a').click(function(e) {
+    $('#timer').text(this.innerHTML);
+    main.setMeasure(this.innerHTML,true);
+});
+$('.sec li > a').click(function(e) {
     $('#counter').text(this.innerHTML);
     main.setMeasure(this.innerHTML,false);
 });

@@ -81,7 +81,7 @@
                         </div>
                         <div class="card-block">
                             <div class="row">
-                                <div class="col-sm-11" id="TimelinePlot"></div>
+                                <div class="col-sm-11" id="Detailview"></div>
                                 <div class="col-sm-1" id="Legend"></div>
                             </div>
                         </div>
@@ -89,48 +89,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                <div class="col-lg-12">
-                    <!-- Example Notifications Card -->
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <i class="fa fa-bar-chart" id="profileview"></i> Profiles
-                            <div class="btn-group">
-                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
-                                <button class="btn btn-primary" id="timer">Timer</button>
-                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-    <span class="caret"></span>
-  </button>
-                                <ul class="dropdown-menu dropdown-inverse">
-                                    <li><a href="#profileview">Calls</a></li>
-                                    <li><a href="#profileview">Subroutines</a></li>
-                                    <li><a href="#profileview">Exclusive Time</a></li>
-                                    <li><a href="#profileview">Inclusive Time</a></li>
-                                </ul>
-                            </div>
-                            <div class="btn-group">
-                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
-                                <button class="btn btn-primary" id="counter">Counter</button>
-                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-    <span class="caret"></span>
-  </button>
-                                <ul class="dropdown-menu dropdown-inverse">
-                                    <li><a href="#profileview">Num Events</a></li>
-                                    <li><a href="#profileview">Max Value</a></li>
-                                    <li><a href="#profileview">Min Value</a></li>
-                                    <li><a href="#profileview">SumSqr Value</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="list-group list-group-flush small">
-                            <div class="row">
-                                <div class="col-sm-12" id="Profiles"></div>
-                            </div>
-                        </div>
-                        <div class="card-footer small text-muted">
-                        </div>
-                    </div>
                 </div>
                 <div class="col-lg-12">
                     <!-- Example Notifications Card -->
@@ -147,6 +105,48 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-12">
+                    <!-- Example Notifications Card -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-bar-chart" id="profileview"></i> Profiles
+                            <div class="btn-group">
+                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+                                <button class="btn btn-primary" id="timer">Timer</button>
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="timerd">
+    <span class="caret"></span>
+  </button>
+                                <ul class="dropdown-menu dropdown-inverse fir">
+                                    <li><a href="#profileview">Calls</a></li>
+                                    <li><a href="#profileview">Subroutines</a></li>
+                                    <li><a href="#profileview">Exclusive Time</a></li>
+                                    <li><a href="#profileview">Inclusive Time</a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+                                <button class="btn btn-primary" id="counter">Counter</button>
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="counterd">
+    <span class="caret"></span>
+  </button>
+                                <ul class="dropdown-menu dropdown-inverse sec">
+                                    <li><a href="#profileview">Num Events</a></li>
+                                    <li><a href="#profileview">Max Value</a></li>
+                                    <li><a href="#profileview">Min Value</a></li>
+                                    <li><a href="#profileview">SumSqr Value</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div class="row">
+                                <div class="col-sm-12" id="Profiles"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer small text-muted">
+                        </div>
+                    </div>
+                </div>
+                
             </div>
         </div>
         <!-- /.container-fluid -->
@@ -165,7 +165,11 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
 
     <!--Visualization JavaScript-->
-    <script src="js/sample_rawdata.js"></script>
+    <script src="js/states.js"></script>
+    <script src="js/messageview.js">
+    </script>
+    <script src="js/legend.js">
+    </script>
     <script src="js/heatmap.js">
     </script>
     <script src="js/sankey.js">
@@ -173,6 +177,8 @@
     <script src="js/flowvis.js">
     </script>
     <script src="js/overview.js">
+    </script>
+    <script src="js/detailview.js">
     </script>
     <script src="js/traceview.js">
     </script>
