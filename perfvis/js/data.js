@@ -7,7 +7,9 @@ class Traces {
                 "MPI","Others"];
 		this.noThreads = noThreads;
 		//this.timeStamps = {min:0,max:6310000,start:0, end:6310000};
+		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
 		this.timeStamps = {min:0,max:2740000,start:0, end:2740000};
+
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
 		    me.threads.push(new Thread(i));
