@@ -39,10 +39,17 @@ class ProfileVis {
             .orient("top")
             .tickFormat(formatPercent);
 
-        //x axis
-        //this.axisSvg = this.svg.append("g")
-        //    .attr("class", "x axis")
-        //    .call(this.xaxis);
+        this.main.traces.threads.forEach(function(thread) {
+            thread.profIdLabel = me.svg.append("g")
+                .attr("class", "idLabel").append("text")
+                .text(thread.location)
+                .attr("x",-20)
+                .attr("y", function(){
+                    return me.y(thread.location)+40;
+                })
+                .attr("font-size", "16px")
+                .attr("font-family", "sans-serif");
+        });
     }
 
     update(brush) {
@@ -59,20 +66,10 @@ class ProfileVis {
 		var me = this;
 		var barheight = 100;
 
-        var id = this.svg.selectAll("idLabel").data([thread.location])
-        .attr("x",-20)
-        .attr("y", function(){
-            return me.y(thread.location);
-        });
-        id.enter().append("text")
-            .text(thread.location)
-            .attr("x",-20)
+        thread.profIdLabel
             .attr("y", function(){
                 return me.y(thread.location)+40;
-            })
-            .attr("font-size", "16px") 
-            .attr("font-family", "sans-serif");
-        id.exit().remove();
+            });
 
         thread.groups.selectAll("rect")
             .data(function(d){return d;})

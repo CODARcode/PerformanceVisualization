@@ -18,6 +18,7 @@ class Thread {
 		
 		//statistic vis
         this.barRect = {};
+        this.idLabel = {};
 
         //profile vis
         this.groups = {};

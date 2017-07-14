@@ -74,14 +74,23 @@ class TraceVis {
 
 
         this.main.traces.threads.forEach(function(thread) {
-        thread.main_lane_text = me.mainCanvas.append("g")
-            .attr("class", "main_lane_text");
-        thread.itemRect = me.mainCanvas.append("g")
-            .attr("clip-path", "url(#clip)");
+            thread.main_lane_text = me.mainCanvas.append("g")
+                .attr("class", "main_lane_text");
+            thread.itemRect = me.mainCanvas.append("g")
+                .attr("clip-path", "url(#clip)");
+            thread.idLabel = me.mainCanvas.append("g")
+                .attr("class", "idLabel").append("text")
+                .text(thread.location)
+                .attr("x",-20)
+                .attr("y", function(){
+                    return me.y1(thread.location)+40;
+                })
+                .attr("font-size", "16px")
+                .attr("font-family", "sans-serif");;
         });
+
         this.messageLines = this.mainCanvas.append("g")
             .attr("class", "messages");
-
         this.messageCircles = this.mainCanvas.append("g")
             .attr("class", "messages");
     }
@@ -203,17 +212,12 @@ class TraceVis {
 		var me = this;
 		var locSets = thread.locSets;
 
-
-        var id = this.mainCanvas.selectAll("idLabel").data([thread.location]);
-        id.enter().append("text")
-            .text(thread.location)
-            .attr("x",-20)
+        thread.idLabel
             .attr("y", function(){
                 return me.y1(thread.location)+40;
             })
             .attr("font-size", "16px")
             .attr("font-family", "sans-serif");
-        id.exit().remove();
 
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems) //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
