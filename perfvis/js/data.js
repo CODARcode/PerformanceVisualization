@@ -74,6 +74,7 @@ class Data {
 
 	setMessages(messages){
 		this.messages = messages;
+		//console.log(messages);
 	}
 
 	setProfiles(profiles, isTimer){

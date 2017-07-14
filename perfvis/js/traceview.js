@@ -30,7 +30,8 @@ class TraceVis {
         //axis
         this.mainAxis = d3.svg.axis()
             .scale(this.x1)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(main.tickByTime);
         this.mouseOverPos;
 
         //chart
@@ -54,6 +55,7 @@ class TraceVis {
             .attr("class", "x axis")
             .call(this.mainAxis);
 
+
         //brush
         this.brush = d3.svg.brush()
             .x(this.x1)
@@ -70,19 +72,19 @@ class TraceVis {
             .attr("class", "x brush")
             .call(this.brush);
 
-    }
 
-
-    init(thread) {
-        var me = this;
-        //main lane text
-        thread.main_lane_text = this.mainCanvas.append("g")
+        this.main.traces.threads.forEach(function(thread) {
+        thread.main_lane_text = me.mainCanvas.append("g")
             .attr("class", "main_lane_text");
-        thread.itemRect = this.mainCanvas.append("g")
+        thread.itemRect = me.mainCanvas.append("g")
             .attr("clip-path", "url(#clip)");
+        });
+        this.messageLines = this.mainCanvas.append("g")
+            .attr("class", "messages");
 
+        this.messageCircles = this.mainCanvas.append("g")
+            .attr("class", "messages");
     }
-
     update(brush){
 		var me = this;
         // set scales
@@ -91,20 +93,115 @@ class TraceVis {
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
 		me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
-
-        //this.mainCanvas.selectAll("g.x brush").remove();
         
+        me.updateMessages(brush);
         //brush
         this.brush
             .x(this.x1)
             .y(this.y1);
     }
 
+    updateMessages(brush) {
+        var me = this;
+        this.messageLines.selectAll("line").remove();
+        this.messageCircles.selectAll("circle").remove();
+        // draw messagelines here
+        var linkMessages = [];
+
+        var myMap = new Map();
+
+        me.main.traces.messages.forEach(function(d){
+            if(d.timestamp>=brush.x0&&d.timestamp<=brush.x1){
+                if(d["event-type"] == "receive"){
+                    //if found, pop and push to linkMessages
+                    var d0 = myMap.get(d["source-node-id"]+","+d["destination-node-id"]);
+                    if(d0 !== undefined){
+                        linkMessages.push({source:parseInt(d["source-node-id"]),destination:parseInt(d["destination-node-id"]),start:d0.timestamp,end:d.timestamp});
+                    }
+                    myMap.set(d["source-node-id"]+","+d["destination-node-id"],undefined);
+                } else {
+                    myMap.set(d["source-node-id"]+","+d["destination-node-id"],d);
+                }
+            }
+        });
+
+        var messagecsvg = this.messageCircles.selectAll("circle")
+            .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
+
+        messagecsvg.enter().append("circle") //only re-enter updated rect!!!
+            .attr("cx", function(d) {
+                return me.x1(d.start);
+            })
+            .attr("cy", function(d) {
+                return me.y1(d.source) + me.y1(1)/2;
+            })
+            .attr("r", 2)
+            .attr("fill","black");
+        messagecsvg.enter().append("circle") //only re-enter updated rect!!!
+            .attr("cx", function(d) {
+                return me.x1(d.end);
+            })
+            .attr("cy", function(d) {
+                return me.y1(d.destination) + me.y1(1)/2;
+            })
+            .attr("r", 2)
+            .attr("fill","black");
+
+        messagecsvg.exit().remove();
+
+        var messagesvg = this.messageLines.selectAll("line")
+            .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
+
+        messagesvg.enter().append("line") //only re-enter updated rect!!!
+            .attr("x1", function(d) {
+                return me.x1(d.start);
+            })
+            .attr("y1", function(d) {
+                return me.y1(d.source) + me.y1(1)/2;
+            })
+            .attr("x2", function(d) {
+                return me.x1(d.end);
+            })
+            .attr("y2", function(d) {
+                return me.y1(d.destination) + me.y1(1)/2;
+            })
+            .attr("stroke","white")
+            .attr("stroke-width", function(){
+                if((brush.x1 - brush.x0)<3000){
+                    return "3px"
+                }else{
+                    return "0px"
+                }
+            });
+        messagesvg.enter().append("line") //only re-enter updated rect!!!
+            .attr("x1", function(d) {
+                return me.x1(d.start);
+            })
+            .attr("y1", function(d) {
+                return me.y1(d.source) + me.y1(1)/2;
+            })
+            .attr("x2", function(d) {
+                return me.x1(d.end);
+            })
+            .attr("y2", function(d) {
+                return me.y1(d.destination) + me.y1(1)/2;
+            })
+            .attr("stroke","black")
+            .attr("stroke-width", function(){
+                if((brush.x1 - brush.x0)<3000){
+                    return "2px"
+                }else{
+                    return "1px"
+                }
+            });
+        messagesvg.exit().remove();
+
+
+    }
+
     updateThread(thread, brush) {
 		var me = this;
 		var locSets = thread.locSets;
-                //update main item rects
-        //thread.itemRect.selectAll("rect").remove(); //---to be fixed---
 
 
         var id = this.mainCanvas.selectAll("idLabel").data([thread.location]);

@@ -28,7 +28,8 @@ class StatisticsVis{
         //axis
         this.metaAxis = d3.svg.axis()
             .scale(this.metax)
-            .orient("top");
+            .orient("top")
+            .tickFormat(main.tickByTime);
 
         this.mouseOverPos;
 
@@ -125,9 +126,17 @@ class StatisticsVis{
             });
 
         labels.enter().append("text")
-            .text(function(d) {
-                var spstr = d.split("=>").slice(-1)[0];
-                return spstr;
+            .text(function(d,i) {
+
+                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
+                var skip = (8>sh)?Math.ceil(8/sh):0;
+
+                if(skip==0||i%skip==0){
+                    var spstr = d.split("=>").slice(-1)[0];
+                    return spstr;
+                }else{
+                    return "";
+                }
             })
             .attr("x", me.mm[4] - 2)
             .attr("y", function(d) {

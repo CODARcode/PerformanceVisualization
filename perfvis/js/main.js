@@ -15,7 +15,16 @@ class Main {
         this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.
         this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
     }
-    
+
+    tickByTime(d){
+        if(d>1000000){
+            return d/1000000+"s";
+        }else if(d>1000){
+            return d/1000+"ms";
+        }else{
+            return d+"\u03BCs";
+        }
+    }
     getColor(name){
         var me = this;
         return me.c20(states[name]);

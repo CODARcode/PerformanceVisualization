@@ -21,7 +21,8 @@ class HeatMap{
         //axis
         this.miniAxis = d3.svg.axis()
             .scale(this.x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(main.tickByTime);
 
         this.mini = overview.chart.append("g")
             .attr("transform", "translate("+overview.leftMargin+"," + ypos +")")

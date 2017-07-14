@@ -23,10 +23,6 @@ class Detailview{
 	}
 
 	init(){
-        var me = this;
-        me.main.traces.threads.forEach(function(thread) {
-            me.tracevis.init(thread);
-        });
         this.histo.init();
 	}
 

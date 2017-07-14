@@ -10,15 +10,20 @@ class MessageVis {
         var timeEnd = main.traces.timeStamps.end;
         this.main = main;
 
+        this.max = 0.1;
         this.canvasHeight = 60; // 20 is for the height of axis
         //scales
         this.x = d3.scale.linear()
             .domain([timeBegin, timeEnd])
             .range([0, thisWidth]); //brush, and mini
 
-        //this.axis = d3.svg.axis()
-        //    .scale(this.x)
-        //    .orient("top");
+        this.y = d3.scale.linear()
+            .domain([0, this.max])
+            .range([this.canvasHeight, 0]); //brush, and mini
+
+        this.axis = d3.svg.axis()
+            .scale(this.y)
+            .orient("left").ticks(3);
 
         this.g = parentview.chart.append("g")
             .attr("transform", "translate("+parentview.leftMargin+",0)")
@@ -26,14 +31,14 @@ class MessageVis {
             .attr("height", this.canvasHeight)
             .attr("class", "histo");
 
-        //this.g.append("g")
-        //    .attr("class", "x axis")
-        //    .call(this.axis);
+        this.axissvg = this.g.append("g")
+            .attr("class", "y axis")
+            .call(this.axis);
+
         this.data = [];
         for(var i = 0;i<100;i++){
         	this.data.push({});
         }
-        this.max = 0.1;
 	}
 
 	init(){
@@ -60,6 +65,8 @@ class MessageVis {
         		}
         	}
         });
+        me.y.domain([0,me.max]);
+        me.axissvg.call(me.axis);
 
 	}
 
