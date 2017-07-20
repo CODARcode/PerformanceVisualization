@@ -8,6 +8,8 @@ class Main {
         this.detailview = new Detailview(this);
         this.profilevis = new ProfileVis(this);
         this.statisticsvis = new StatisticsVis(this);
+        this.stackedBars = new StackedBars(this);
+        this.treemaps = new Treemapview(this);
         this.legend = new Legend(this);
 
         this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
@@ -69,6 +71,7 @@ class Main {
             me.profilevis.updateThread(thread);
             me.statisticsvis.updateThread(thread);
         });
+        this.stackedBars.update(brush);
     }
 
     init() {
@@ -84,6 +87,7 @@ class Main {
                 profileMaxX = thisSum;
             }
             me.statisticsvis.init(thread);
+            me.treemaps.updateThread(thread, false, "Num Events");
         });
         me.profilevis.setXAxis(profileMaxX);
 
@@ -130,11 +134,22 @@ class Main {
         this.profilevis.setXAxis(profileMaxX);
         this.traces.threads.forEach(function(thread) {
             me.profilevis.updateThread(thread);
+            me.treemaps.updateThread(thread, isTimer, measure);
         });
     }
 }
 
 var main = new Main();
+$('.vis li > a').click(function(e) {
+    $('#vis_type').text(this.innerHTML);
+    if(this.innerHTML=="Treemap"){
+        $('#Treemaps').show();
+        $('#Profiles').hide();
+    }else{
+        $('#Profiles').show();
+        $('#Treemaps').hide();
+    }
+});
 $('.fir li > a').click(function(e) {
     $('#timer').text(this.innerHTML);
     main.setMeasure(this.innerHTML,true);

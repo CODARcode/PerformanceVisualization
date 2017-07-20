@@ -57,6 +57,8 @@ class Thread {
 		this.itemRect.selectAll("rect").remove();
 		this.main_lane_text.selectAll("text").remove();
 		this.main_lane_text.selectAll("line").remove();
+		this.nodeRect.selectAll("rect").remove();
+		this.nodeText.selectAll("text").remove();
 
         this.barRect.selectAll("rect").remove();
         this.barRect.selectAll("text").remove();

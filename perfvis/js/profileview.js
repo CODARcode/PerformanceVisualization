@@ -153,12 +153,15 @@ class ProfileVis {
         //console.log(thread.stacks);
         this.svg.selectAll("g.thread" + thread.location).remove();
 
+        var color = d3.scale.category20c();
+
         thread.groups = this.svg.selectAll("g.thread" + thread.location)
             .data(thread.stacks)
             .enter().append("g")
             .attr("class", "thread" + thread.location)
             .style("fill", function(d) {
                 return me.main.getTwoColor(d[0].colorIndex);//(d[0].path);
+                //return color(d[0].path);
             })
             .style("opacity", function(d) {
                 return 1.0 * d[0].count / count[d[0].index];

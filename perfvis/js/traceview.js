@@ -86,7 +86,10 @@ class TraceVis {
                     return me.y1(thread.location)+40;
                 })
                 .attr("font-size", "16px")
-                .attr("font-family", "sans-serif");;
+                .attr("font-family", "sans-serif")
+                .on('click', function(d){
+                    me.main.stackedBars.setIndex(thread.location);
+                });;
         });
 
         this.messageLines = this.mainCanvas.append("g")

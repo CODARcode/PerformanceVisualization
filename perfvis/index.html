@@ -43,6 +43,9 @@
                             <a href="#detailView">Traces</a>
                         </li>
                         <li>
+                            <a href="#stackedBars">Node Dtail View</a>
+                        </li>
+                        <li>
                             <a href="#profileview">Profiles</a>
                         </li>
                         <li>
@@ -90,6 +93,23 @@
                     </div>
 
                 </div>
+
+                <div class="col-lg-12">
+                    <!-- Example Notifications Card -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-bar-chart" id="stackedBars"></i> Node Detail View
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div class="row">
+                                <div class="col-sm-12" id="StackedBars"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer small text-muted">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-lg-12">
                     <!-- Example Notifications Card -->
                     <div class="card mb-3">
@@ -110,6 +130,19 @@
                     <div class="card mb-3">
                         <div class="card-header">
                             <i class="fa fa-bar-chart" id="profileview"></i> Profiles
+
+                            <div class="btn-group">
+                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+                                <button class="btn btn-primary" id="vis_type">Visualization</button>
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="visTyped">
+    <span class="caret"></span>
+  </button>
+                                <ul class="dropdown-menu dropdown-inverse vis">
+                                    <li><a href="#profileview" >Bar Chart</a></li>
+                                    <li><a href="#profileview" >Treemap</a></li>
+                                </ul>
+                            </div>
+
                             <div class="btn-group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
                                 <button class="btn btn-primary" id="timer">Timer</button>
@@ -139,7 +172,8 @@
                         </div>
                         <div class="list-group list-group-flush small">
                             <div class="row">
-                                <div class="col-sm-12" id="Profiles"></div>
+                                <div class="col-sm-12" id="Profiles" ></div>
+                                <div class="col-sm-12" id="Treemaps"></div>
                             </div>
                         </div>
                         <div class="card-footer small text-muted">
@@ -183,6 +217,10 @@
     <script src="js/traceview.js">
     </script>
     <script src="js/profileview.js">
+    </script>
+    <script src="js/stackbars.js">
+    </script>
+    <script src="js/treemapview.js">
     </script>
     <script src="js/statisticsview.js">
     </script>
