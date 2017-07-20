@@ -1,5 +1,7 @@
 .DS_Store
 
+perfvis/node_modules/
+
 perfvis/node_modules/connect/HISTORY.md
 
 perfvis/node_modules/connect/node_modules/finalhandler/node_modules/encodeurl/package.json
