@@ -7,7 +7,7 @@ class StackedBars{
         this.timeBegin = main.traces.timeStamps.start;
         this.timeEnd = main.traces.timeStamps.end;
 
-        this.m = [30, 50, 10, 50, 0]; //top right bottom left (space between main and mini)
+        this.m = [30, 170, 10, 50, 0]; //top right bottom left (space between main and mini)
         var bb = document.querySelector('#StackedBars')
                     .getBoundingClientRect();
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
@@ -95,13 +95,13 @@ class StackedBars{
                 return me.x(d.start);
             })
             .attr("y", function(d) {
-                return 55 + d.level * 15;
+                return 55 + d.level * 12;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(d.end) - me.x(d.start), 1);
             })
             .attr("height", function(d) {
-                return 15;// / locSets.length;
+                return 12;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);

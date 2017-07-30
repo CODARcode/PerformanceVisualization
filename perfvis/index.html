@@ -129,8 +129,7 @@
                     <!-- Example Notifications Card -->
                     <div class="card mb-3">
                         <div class="card-header">
-                            <i class="fa fa-bar-chart" id="profileview"></i> Profiles
-
+                            <i class="fa fa-bar-chart" id="profileview"></i> Profiles Visualization:
                             <div class="btn-group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
                                 <button class="btn btn-primary" id="vis_type">Visualization</button>
@@ -138,14 +137,14 @@
     <span class="caret"></span>
   </button>
                                 <ul class="dropdown-menu dropdown-inverse vis">
-                                    <li><a href="#profileview" >Bar Chart</a></li>
-                                    <li><a href="#profileview" >Treemap</a></li>
+                                    <li><a href="#profileview">Bar Chart</a></li>
+                                    <li><a href="#profileview">Treemap</a></li>
                                 </ul>
                             </div>
-
+                            Timer:
                             <div class="btn-group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
-                                <button class="btn btn-primary" id="timer">Timer</button>
+                                <button class="btn btn-primary" id="timer">-</button>
                                 <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="timerd">
     <span class="caret"></span>
   </button>
@@ -156,9 +155,10 @@
                                     <li><a href="#profileview">Inclusive Time</a></li>
                                 </ul>
                             </div>
+                            Counter:
                             <div class="btn-group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
-                                <button class="btn btn-primary" id="counter">Counter</button>
+                                <button class="btn btn-primary" id="counter">-</button>
                                 <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="counterd">
     <span class="caret"></span>
   </button>
@@ -172,7 +172,7 @@
                         </div>
                         <div class="list-group list-group-flush small">
                             <div class="row">
-                                <div class="col-sm-12" id="Profiles" ></div>
+                                <div class="col-sm-12" id="Profiles"></div>
                                 <div class="col-sm-12" id="Treemaps"></div>
                             </div>
                         </div>
@@ -199,6 +199,8 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
 
     <!--Visualization JavaScript-->
+    <script src="js/histogram.js"></script>
+    <script src="js/overviewdata.js"></script>
     <script src="js/states.js"></script>
     <script src="js/messageview.js">
     </script>

@@ -16,14 +16,11 @@ class Overview{
             .attr("width", this.w + this.m[1] + this.m[3])
             .attr("height", this.h + this.m[0] + this.m[2])
             .attr("class", "chart");
-        this.histo = new MessageVis(main, me);
+        this.histo = new Histogram(me);
         this.heatmap = new HeatMap(main, me, 60);
-    }
 
-    init(){
-        var me = this;
-        me.main.traces.threads.forEach(function(d){
-            me.heatmap.init(d);
+        traceArray.forEach(function(d,i){
+            me.heatmap.init(d,i);
         });
         this.heatmap.initBrush();
         this.histo.init();

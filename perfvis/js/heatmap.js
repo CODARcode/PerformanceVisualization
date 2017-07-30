@@ -4,9 +4,9 @@ class HeatMap{
         var stageWidth = overview.w - overview.leftMargin;
 		var me = this;
         this.leftMargin = overview.leftMargin;
-        this.noThreads = main.traces.threads.length;//
-        var timeBegin = main.traces.timeStamps.start;
-        var timeEnd = main.traces.timeStamps.end;
+        this.noThreads = traceArray.length;//
+        var timeBegin = 0;
+        var timeEnd = 6308000;
         this.main = main;
 
         this.bandWidth = (overview.h-ypos)/this.noThreads - 5;
@@ -38,30 +38,27 @@ class HeatMap{
 
 	}
 
-    init(thread) {
+    init(data, id) {
         var me = this;
         this.mini.append("text")
             .attr("x",-me.leftMargin)
-            .attr("y",me.y2(thread.location)+15)
-            .text("node-id: "+thread.location)
+            .attr("y",me.y2(id)+15)
+            .text("node-id: "+id)
             .attr("font-size", "16px") 
             .attr("font-family", "sans-serif");
         this.mini.append("g").selectAll("miniItems")
-            .data(thread.traces)
+            .data(data)
             .enter().append("rect")
-            .attr("x", function(d) {
-                if(me.x(d.start)<0){
-                    console.log(d.start)
-                }
-                return me.x(d.start);
+            .attr("x", function(d,i) {
+                return me.x(i*10000);
             })
-            .attr("y", function(d) {
-                return me.y2(thread.location);
-            }) //4 means to leave a little distance
+            .attr("y", me.y2(id)) //4 means to leave a little distance
             .attr("fill", "gray")
-            .attr("fill-opacity", .1)
-            .attr("width", function(d) {
-                return Math.max((me.x(d.end) - me.x(d.start)), 1);
+            .attr("fill-opacity", function(d){
+                return d/100;
+            })
+            .attr("width", function(d, i) {
+                return Math.max((me.x((i+1)*10000) - me.x(i*10000)), 1);
             })
             .attr("height", me.bandWidth);
 

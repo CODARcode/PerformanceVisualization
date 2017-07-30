@@ -76,7 +76,7 @@ class Main {
 
     init() {
         var me = this;
-        this.overview.init();
+        //this.overview.init();
         this.detailview.init();
         //this.overview.drawlegend(this.traces.regions);
 

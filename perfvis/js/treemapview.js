@@ -44,12 +44,12 @@ class Treemapview{
         Object.keys(profiles).forEach(function(d) {
             array.push({"name":d,"size":profiles[d][measure]});
         })
-        console.log(array);
+        //console.log(array);
 
         var td = {"children":array};
 
     	var color = d3.scale.category20c();
-        console.log(td);
+        //console.log(td);
 
 		var treemap = d3.layout.treemap()
     		.size([width, height])
