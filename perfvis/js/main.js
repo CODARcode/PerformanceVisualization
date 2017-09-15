@@ -13,9 +13,17 @@ class Main {
         this.legend = new Legend(this);
 
         this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
+        
         this.sendQuery("profiles/0", this.getProfiles);//timers of the profiles.
-        this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.
+        this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.        
+        this.sendQuery("profiles/2", this.getProfiles);//timers of the profiles.
+        this.sendQuery("profiles/3", this.getProfiles);//counters of the profiles.        
+        this.sendQuery("profiles/4", this.getProfiles);//timers of the profiles.
+        this.sendQuery("profiles/5", this.getProfiles);//counters of the profiles.
+        
         this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
+        this.timerType = 0;
+        this.measure = "Calls";
     }
 
     tickByTime(d){
@@ -82,12 +90,12 @@ class Main {
 
         var profileMaxX = 0;
         this.traces.threads.forEach(function(thread) {
-            var thisSum = me.profilevis.init(thread, me.traces.regions, false);
+            var thisSum = me.profilevis.init(thread, me.traces.regions, 0);
             if (thisSum > profileMaxX) {
                 profileMaxX = thisSum;
             }
             me.statisticsvis.init(thread);
-            me.treemaps.updateThread(thread, false, "Num Events");
+            me.treemaps.updateThread(thread, 0, "Calls");
         });
         me.profilevis.setXAxis(profileMaxX);
 
@@ -118,15 +126,15 @@ class Main {
     }
 
     getProfiles(me, obj, queryStr) {
-        me.traces.setProfiles(obj, (queryStr.substring(9) == "0"));
+        me.traces.setProfiles(obj, queryStr.substring(9));
     }
 
-    setMeasure(measure, isTimer){
+    setMeasure(measure, timerType){
         var me = this;
         this.profilevis.setMeasure(measure);
         var profileMaxX = 0;
         this.traces.threads.forEach(function(thread) {
-            var thisSum = me.profilevis.init(thread, me.traces.regions, isTimer);
+            var thisSum = me.profilevis.init(thread, me.traces.regions, timerType);
             if (thisSum > profileMaxX) {
                 profileMaxX = thisSum;
             }
@@ -134,7 +142,7 @@ class Main {
         this.profilevis.setXAxis(profileMaxX);
         this.traces.threads.forEach(function(thread) {
             me.profilevis.updateThread(thread);
-            me.treemaps.updateThread(thread, isTimer, measure);
+            me.treemaps.updateThread(thread, timerType, measure);
         });
     }
 }
@@ -150,11 +158,38 @@ $('.vis li > a').click(function(e) {
         $('#Treemaps').hide();
     }
 });
+$('.zer li > a').click(function(e) {
+    $('#pid').text(this.innerHTML);
+    if(this.innerHTML == "NWCHEM Timer"){
+        main.timerType = 0;
+    }else if(this.innerHTML =="NWCHEM Counter"){
+        main.timerType = 1;
+    }else if(this.innerHTML =="TAU Timer"){
+        main.timerType = 2;
+    }else if(this.innerHTML =="TAU Counter"){
+        main.timerType = 3;
+    }else if(this.innerHTML =="TAU1 Timer"){
+        main.timerType = 4;
+    }else if(this.innerHTML =="TAU1 Counter"){
+        main.timerType = 5;
+    }
+    if(main.timerType%2==0){
+        $('#t_group').show();
+        $('#c_group').hide();
+    }else{
+        $('#t_group').hide();
+        $('#c_group').show();
+    }
+
+    main.setMeasure(main.measure,main.timerType);
+});
 $('.fir li > a').click(function(e) {
     $('#timer').text(this.innerHTML);
-    main.setMeasure(this.innerHTML,true);
+    main.measure = this.innerHTML;
+    main.setMeasure(main.measure,main.timerType);
 });
 $('.sec li > a').click(function(e) {
     $('#counter').text(this.innerHTML);
-    main.setMeasure(this.innerHTML,false);
+    main.measure = this.innerHTML;
+    main.setMeasure(main.measure,main.timerType);
 });

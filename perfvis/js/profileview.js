@@ -13,7 +13,7 @@ class ProfileVis {
         this.w = twidth - this.m[1] - this.m[3];
         this.h = theight - this.m[0] - this.m[2];
         this.height = this.h - this.m[4]; //has space between
-		this.measure = "Num Events";
+		this.measure = "Calls";
 
         var formatPercent = d3.format(".0%");
         this.x = d3.scale.linear()
@@ -115,14 +115,16 @@ class ProfileVis {
     }
 
 
-    init(thread, regions, isTimer) {
+    init(thread, regions, timerId) {
         var me = this;
 
-        var profiles = thread.timerProfiles;
-        if(!isTimer){
-            profiles = thread.counterProfiles;
+        var profiles = {};
+        var index = Math.floor(timerId/2);
+        if(timerId%2==0){
+            profiles = thread.timerProfiles[index];
+        }else{
+            profiles = thread.counterProfiles[index];
         }
-
         var sum = 0;
 
         Object.keys(profiles).forEach(function(d) {

@@ -5,10 +5,10 @@ class Thread {
     	var me = this;
         this.location = lid;
 
-        this.timer = [];
-        this.counter = [];
-        this.timerProfiles = {};
-        this.counterProfiles = {};
+        this.timer = [[],[],[]];
+        this.counter = [[],[],[]];
+        this.timerProfiles = [{},{},{}];
+        this.counterProfiles = [{},{},{}];
 
         this.traces = [];
 
@@ -28,23 +28,25 @@ class Thread {
 		this.locMaps = new Map(); //the array of (region, time period) maps for all locations
 	}
 
-	addProfile(profile, isTimer){
-		if(isTimer){
-			this.timer.push(profile);
+	addProfile(profile, timerId){
+		var index = Math.floor(timerId/2);
+		if(timerId%2==0){
+			this.timer[index].push(profile);
 		}else{
-			this.counter.push(profile);
+			this.counter[index].push(profile);
 		}
 	}
 
-	setProfiles(isTimer){
+	setProfiles(timerId){
 		var me = this;
-		if(isTimer){
-        	this.timer.forEach(function(d){
-            	me.timerProfiles[d.Function] = d;
+		var index = Math.floor(timerId/2);
+		if(timerId%2==0){
+        	this.timer[index].forEach(function(d){
+            	me.timerProfiles[index][d.Function] = d;
         	});	
 		}else{
-        	this.counter.forEach(function(d){
-            	me.counterProfiles[d.Counter] = d;
+        	this.counter[index].forEach(function(d){
+            	me.counterProfiles[index][d.Counter] = d;
         	});	
 		}
 

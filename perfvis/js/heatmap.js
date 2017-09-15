@@ -62,6 +62,26 @@ class HeatMap{
             })
             .attr("height", me.bandWidth);
 
+        this.mini.append("g").selectAll("fort")
+            .data(fort)
+            .enter().append("path") //only re-enter updated rect!!!
+            .filter(function(d) { return d.end <= me.main.traces.timeStamps.max})
+            .attr("d", function(d) {
+                var x1 = me.x(d.end);
+                var x2 = me.x(d.start);
+                var y1 = me.y2(0);
+                var y2 = me.y2(0) + me.y2(1)-25;
+                var y3 = me.y2(4) + me.y2(1)-25;
+                var y4 = me.y2(4);
+                return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
+            })
+            .attr("fill","white")
+            .attr("stroke","gray")
+            .attr("opacity", 0.2)
+            .append("title") //asynch mode may generate different brush extents
+            .text(function(d) {
+                return "filename: "+d.file;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+            });
     }
 
     initBrush(){

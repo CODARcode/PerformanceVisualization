@@ -19,10 +19,10 @@ class Overview{
         this.histo = new Histogram(me);
         this.heatmap = new HeatMap(main, me, 60);
 
+        this.heatmap.initBrush();
         traceArray.forEach(function(d,i){
             me.heatmap.init(d,i);
         });
-        this.heatmap.initBrush();
         this.histo.init();
     }
 }

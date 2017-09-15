@@ -141,8 +141,23 @@
                                     <li><a href="#profileview">Treemap</a></li>
                                 </ul>
                             </div>
-                            Timer:
+                            Profiles:
                             <div class="btn-group">
+                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+                                <button class="btn btn-primary" id="pid">-</button>
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="pidd">
+    <span class="caret"></span>
+  </button>
+                                <ul class="dropdown-menu dropdown-inverse zer">
+                                    <li><a href="#profileview">NWCHEM Timer</a></li>
+                                    <li><a href="#profileview">NWCHEM Counter</a></li>
+                                    <li><a href="#profileview">TAU Timer</a></li>
+                                    <li><a href="#profileview">TAU Counter</a></li>
+                                    <li><a href="#profileview">TAU1 Timer</a></li>
+                                    <li><a href="#profileview">TAU1 Counter</a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group" id="t_group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
                                 <button class="btn btn-primary" id="timer">-</button>
                                 <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="timerd">
@@ -155,8 +170,7 @@
                                     <li><a href="#profileview">Inclusive Time</a></li>
                                 </ul>
                             </div>
-                            Counter:
-                            <div class="btn-group">
+                            <div class="btn-group" id="c_group">
                                 <i class="dropdown-arrow dropdown-arrow-inverse"></i>
                                 <button class="btn btn-primary" id="counter">-</button>
                                 <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="counterd">
@@ -169,6 +183,7 @@
                                     <li><a href="#profileview">SumSqr Value</a></li>
                                 </ul>
                             </div>
+
                         </div>
                         <div class="list-group list-group-flush small">
                             <div class="row">

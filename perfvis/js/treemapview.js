@@ -30,15 +30,18 @@ class Treemapview{
 
 	}
 
-	updateThread(thread, isTimer, measure){
+	updateThread(thread, timerId, measure){
 
 		var width = 200;
 		var height = 200;
         var me = this;
 
-        var profiles = thread.timerProfiles;
-        if(!isTimer){
-            profiles = thread.counterProfiles;
+        var profiles = {};
+        var index = Math.floor(timerId/2);
+        if(timerId%2==0){
+            profiles = thread.timerProfiles[index];
+        }else{
+            profiles = thread.counterProfiles[index];
         }
         var array = [];
         Object.keys(profiles).forEach(function(d) {

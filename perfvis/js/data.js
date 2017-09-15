@@ -5,10 +5,10 @@ class Data {
 		var me = this;
 		this.regions = ["TAU_USER", "TAU_DEFAULT", "TAU_CALLPATH",
                 "MPI","Others"];
-		this.noThreads = noThreads;
-		//this.timeStamps = {min:0,max:6310000,start:0, end:6310000};
+		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
+		this.timeStamps = {min:6110000,max:6150000,start:6110000, end:6150000};
+		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
@@ -77,13 +77,14 @@ class Data {
 		//console.log(messages);
 	}
 
-	setProfiles(profiles, isTimer){
+	setProfiles(profiles, timerType){
 		var me = this;
+		var timerId = parseInt(timerType);
 		profiles.forEach(function(profile){
-			me.threads[profile["process index"]].addProfile(profile,isTimer);
+			me.threads[profile["process index"]%5].addProfile(profile,timerId);	
 		});
 		this.threads.forEach(function(thread){
-			thread.setProfiles(isTimer);
+			thread.setProfiles(timerId);
 		});
 	}
 }

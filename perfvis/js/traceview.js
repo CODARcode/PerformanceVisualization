@@ -23,10 +23,10 @@ class TraceVis {
             .range([0, this.w]); //main
         this.y1 = d3.scale.linear()
             .domain([0, this.noThreads])
-            .range([20, this.mainHeight+20]); //main
+            .range([20, this.mainHeight]); //main
         this.y2 = d3.scale.linear()
             .domain([0, this.noThreads])
-            .range([20, this.miniHeight+20]); //mini
+            .range([20, this.miniHeight]); //mini
         //axis
         this.mainAxis = d3.svg.axis()
             .scale(this.x1)
@@ -96,6 +96,8 @@ class TraceVis {
             .attr("class", "messages");
         this.messageCircles = this.mainCanvas.append("g")
             .attr("class", "messages");
+        this.fort = this.mainCanvas.append("g")
+            .attr("class", "fort");
     }
     update(brush){
 		var me = this;
@@ -136,6 +138,28 @@ class TraceVis {
                 }
             }
         });
+        this.fort.selectAll("path").remove();
+        var fortsvg = this.fort.selectAll("path")
+            .data(fort);
+        fortsvg.enter().append("path") //only re-enter updated rect!!!
+            .filter(function(d) { return d.start >=brush.x0&& d.end <= brush.x1})
+            .attr("d", function(d) {
+                var x1 = me.x1(d.end);
+                var x2 = me.x1(d.start);
+                var y1 = me.y1(0);
+                var y2 = me.y1(0) + me.y1(1)-30;
+                var y3 = me.y1(4) + me.y1(1)-30;
+                var y4 = me.y1(4);
+                return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
+            })
+            .attr("fill","white")
+            .attr("stroke","gray")
+            .attr("opacity", 0.5)
+            .append("title") //asynch mode may generate different brush extents
+            .text(function(d) {
+                return "filename: "+d.file;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+            });
+        fortsvg.exit().remove();
 
         var messagecsvg = this.messageCircles.selectAll("circle")
             .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
@@ -234,7 +258,7 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                return mainHeight * .8 / me.localLocLength - d.level * 5;// / locSets.length;
+                return mainHeight * .6 / me.localLocLength - d.level * 5;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);
@@ -254,7 +278,7 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                var thisHeight = me.mainHeight * .8 / me.localLocLength - d.level * 5;
+                var thisHeight = me.mainHeight * .6 / me.localLocLength - d.level * 5;
                 if(thisHeight<5){
                     thisHeight = 5;
                 }

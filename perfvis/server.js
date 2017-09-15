@@ -20,8 +20,16 @@ http.createServer(function(request, response) {
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);
-        }else{
+        }else if(uri.substring(10) == "1"){
             query("counters",{},response);
+        }else if(uri.substring(10) == "2"){
+            query("timers1",{},response);
+        }else if(uri.substring(10) == "3"){
+            query("counters1",{},response);
+        }else if(uri.substring(10) == "4"){
+            query("timers2",{},response);
+        }else if(uri.substring(10) == "5"){
+            query("counters2",{},response);
         }
     } else {
         fs.exists(filename, function(exists) {
