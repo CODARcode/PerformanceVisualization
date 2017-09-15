@@ -7,7 +7,7 @@ class Data {
                 "MPI","Others"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:6110000,max:6150000,start:6110000, end:6150000};
+		this.timeStamps = {min:6110000,max:6500000,start:6110000, end:6150000};
 		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];

@@ -146,10 +146,10 @@ class TraceVis {
             .attr("d", function(d) {
                 var x1 = me.x1(d.end);
                 var x2 = me.x1(d.start);
-                var y1 = me.y1(0);
-                var y2 = me.y1(0) + me.y1(1)-30;
-                var y3 = me.y1(4) + me.y1(1)-30;
-                var y4 = me.y1(4);
+                var y1 = me.y1(d.nodestart);
+                var y2 = me.y1(d.nodestart) + me.y1(1)-30;
+                var y3 = me.y1(d.nodeend) + me.y1(1)-30;
+                var y4 = me.y1(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
             .attr("fill","white")

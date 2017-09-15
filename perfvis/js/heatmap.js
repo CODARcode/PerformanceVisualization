@@ -69,10 +69,10 @@ class HeatMap{
             .attr("d", function(d) {
                 var x1 = me.x(d.end);
                 var x2 = me.x(d.start);
-                var y1 = me.y2(0);
-                var y2 = me.y2(0) + me.y2(1)-25;
-                var y3 = me.y2(4) + me.y2(1)-25;
-                var y4 = me.y2(4);
+                var y1 = me.y2(d.nodestart);
+                var y2 = me.y2(d.nodestart) + me.y2(1)-25;
+                var y3 = me.y2(d.nodeend) + me.y2(1)-25;
+                var y4 = me.y2(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
             .attr("fill","white")
