@@ -6,7 +6,7 @@ class HeatMap{
         this.leftMargin = overview.leftMargin;
         this.noThreads = traceArray.length;//
         var timeBegin = 0;
-        var timeEnd = 6308000;
+        var timeEnd = 6310000;
         this.main = main;
 
         this.bandWidth = (overview.h-ypos)/this.noThreads - 5;
