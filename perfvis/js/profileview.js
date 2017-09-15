@@ -4,7 +4,7 @@ class ProfileVis {
     constructor(main) {
         var me = this;
         this.main = main;
-        this.noThreads = main.traces.threads.length;
+        this.noThreads = main.traces.noThreads;//threads.length;
         var bb = document.querySelector('#Profiles')
             .getBoundingClientRect();
         var twidth = bb.right - bb.left;

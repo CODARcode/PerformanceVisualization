@@ -3,8 +3,6 @@ class Treemapview{
 		var me = this;
 		this.main = main;
 
-
-
         this.m = [30, 50, 10, 50, 0]; //top right bottom left (space between main and mini)
         var bb = document.querySelector('#Treemaps')
                     .getBoundingClientRect();
