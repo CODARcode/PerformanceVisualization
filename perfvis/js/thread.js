@@ -26,6 +26,7 @@ class Thread {
 		this.visItems = [];
 		this.locSets = []; //the array of region sets for all locations
 		this.locMaps = new Map(); //the array of (region, time period) maps for all locations
+		this.min_level = 0;
 	}
 
 	addProfile(profile, timerId){
@@ -81,10 +82,13 @@ class Thread {
 
 		var locSets = []; //the array of region sets for all locations
 		var locMaps = new Map(); //the array of (region, time period) maps for all locations
-		
+		me.min_level=Number.MAX_SAFE_INTEGER;
 		visItems.forEach(function(visItem) {
 			// add new item, include redundant ones
 			locSets.push(visItem.region);
+			if(visItem.level<me.min_level){
+				me.min_level = visItem.level;
+			}
 			// update location maps
 			var val = locMaps.get(visItem.region);
 			// consider the current extent
@@ -110,7 +114,7 @@ class Thread {
 			}
 			//console.log(i, locMaps[0].size, locMaps[1].size, locMaps[2].size, locMaps[3].size);
 		})
-
+		//console.log(me.min_level);
 		locSets = Array.from(locMaps.keys());
 		locSets.sort(); //sort in order to increase stability for display
 		

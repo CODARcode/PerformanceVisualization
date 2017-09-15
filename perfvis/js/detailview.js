@@ -8,10 +8,10 @@ class Detailview{
 		var bb = document.querySelector('#Detailview')
             .getBoundingClientRect();
 
-        this.m = [20, 10, 0, 30, 0]; //top right bottom left (space between main and mini)
+        this.m = [10, 10, 0, 10, 0]; //top right bottom left (space between main and mini)
 
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
-        this.h = 600 - this.m[0] - this.m[2];
+        this.h = 680 - this.m[0] - this.m[2];
 
         this.chart = d3.select("#Detailview")
             .append("svg")

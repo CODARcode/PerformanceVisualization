@@ -85,17 +85,18 @@ class StackedBars{
                 })
                 .attr("font-size", "16px")
                 .attr("font-family", "sans-serif");
+        var min_level = -100;
+
 
         var rects = thread.nodeRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems);//the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-
 
         rects.enter().append("rect") //only re-enter updated rect!!!
             .attr("x", function(d) {
                 return me.x(d.start);
             })
             .attr("y", function(d) {
-                return 55 + d.level * 12;
+                return (d.level-thread.min_level) * 12;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(d.end) - me.x(d.start), 1);

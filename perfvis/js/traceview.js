@@ -8,12 +8,11 @@ class TraceVis {
         this.timeBegin = main.traces.timeStamps.start;
         this.timeEnd = main.traces.timeStamps.end;
         this.noThreads = main.traces.noThreads;
-        me.localLocLength = this.noThreads*1.7;
         this.main = main;
         this.m = [20, 50, 0, 30]; //top right bottom left (space between main and mini)
 
         this.w = parentview.w - parentview.leftMargin;
-        this.mainHeight = 500; //has space between
+        this.mainHeight = 600; //has space between
         //scales
         this.x = d3.scale.linear()
             .domain([this.timeBegin, this.timeEnd])
@@ -24,9 +23,6 @@ class TraceVis {
         this.y1 = d3.scale.linear()
             .domain([0, this.noThreads])
             .range([20, this.mainHeight]); //main
-        this.y2 = d3.scale.linear()
-            .domain([0, this.noThreads])
-            .range([20, this.miniHeight]); //mini
         //axis
         this.mainAxis = d3.svg.axis()
             .scale(this.x1)
@@ -147,8 +143,8 @@ class TraceVis {
                 var x1 = me.x1(d.end);
                 var x2 = me.x1(d.start);
                 var y1 = me.y1(d.nodestart);
-                var y2 = me.y1(d.nodestart) + me.y1(1)-30;
-                var y3 = me.y1(d.nodeend) + me.y1(1)-30;
+                var y2 = me.y1(d.nodestart+1);
+                var y3 = me.y1(d.nodeend+1);
                 var y4 = me.y1(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
@@ -169,7 +165,7 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("cy", function(d) {
-                return me.y1(d.source) + me.y1(1)/2;
+                return me.y1(d.source+1/2);
             })
             .attr("r", 2)
             .attr("fill","black");
@@ -178,7 +174,7 @@ class TraceVis {
                 return me.x1(d.end);
             })
             .attr("cy", function(d) {
-                return me.y1(d.destination) + me.y1(1)/2;
+                return me.y1(d.destination+1/2);
             })
             .attr("r", 2)
             .attr("fill","black");
@@ -193,13 +189,13 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source) + me.y1(1)/2;
+                return me.y1(d.source+1/2);
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination) + me.y1(1)/2;
+                return me.y1(d.destination+1/2);
             })
             .attr("stroke","white")
             .attr("stroke-width", function(){
@@ -214,13 +210,13 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source) + me.y1(1)/2;
+                return me.y1(d.source+1/2);
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination) + me.y1(1)/2;
+                return me.y1(d.destination+1/2);
             })
             .attr("stroke","black")
             .attr("stroke-width", function(){
@@ -241,28 +237,14 @@ class TraceVis {
 
         thread.idLabel
             .attr("y", function(){
-                return me.y1(thread.location)+40;
+                return me.y1(thread.location+1/2);
             })
             .attr("font-size", "16px")
             .attr("font-family", "sans-serif");
 
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
-            .data(thread.visItems) //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-            .attr("x", function(d) {
-                return me.x1(d.start);
-            })
-            .attr("y", function(d) {
-                return me.y1(thread.location) + 10 + d.level * 2;
-            })
-            .attr("width", function(d) {
-                return Math.max(me.x1(d.end) - me.x1(d.start), 1);
-            })
-            .attr("height", function(d) {
-                return mainHeight / me.localLocLength - d.level * 5;// / locSets.length;
-            })
-            .attr("fill", function(d) {
-                return me.main.getColor(d.region);
-            });
+            .data(thread.visItems); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
+            
 
         rects.enter().append("rect") //only re-enter updated rect!!!
             .attr("class", function(d) {
@@ -272,13 +254,17 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y", function(d) {
-                return me.y1(thread.location) + 10 + d.level * 2;
+                var thisHeight = me.y1(1/2) - d.level * 4;
+                if(thisHeight<5){
+                    thisHeight = 5;
+                }
+                return me.y1(thread.location+1/2) -thisHeight/2;
             })
             .attr("width", function(d) {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                var thisHeight = me.mainHeight / me.localLocLength - d.level * 5;
+                var thisHeight = me.y1(1/2) - d.level * 4;
                 if(thisHeight<5){
                     thisHeight = 5;
                 }
