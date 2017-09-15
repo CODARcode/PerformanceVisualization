@@ -74,14 +74,16 @@ class Main {
         this.profilevis.update(brush);
         this.statisticsvis.update(brush);
 
-        this.traces.threads.forEach(function(thread) {
+        this.traces.threads.forEach(function(thread,i) {
+            //if(i<me.traces.noThread){
             thread.clear();
             thread.filter(brush);
             //if(!fake){
-                me.detailview.tracevis.updateThread(thread, brush);
+            me.detailview.tracevis.updateThread(thread, brush);
             //}
             me.profilevis.updateThread(thread);
             me.statisticsvis.updateThread(thread);
+        //}
         });
         this.stackedBars.update(brush);
     }
@@ -103,10 +105,10 @@ class Main {
         });
         me.profilevis.setXAxis(profileMaxX);
 
-        this.update([
-            [0, 0],
-            [0, 0]
-        ]);
+        //this.update([
+        //    [0, 0],
+        //    [0, 0]
+        //]);
     }
 
     sendQuery(queryStr, callback) {

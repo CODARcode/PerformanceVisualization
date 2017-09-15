@@ -7,7 +7,7 @@ class Data {
                 "MPI","Others"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:6110000,max:6500000,start:6110000, end:6150000};
+		this.timeStamps = {min:6100000,max:6500000,start:0, end:100};
 		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];
@@ -28,7 +28,7 @@ class Data {
 				console.log(event["node-id"]);
 			}
 			if(event["event-type"] == "exit"){
-				var startTime = me.timeStamps.start;
+				var startTime = me.timeStamps.min;
 				if(stack.length >= 1&&stack[stack.length - 1].name == event.name){
 					startTime = stack[stack.length - 1].time;
 					stack.pop();
@@ -53,7 +53,7 @@ class Data {
 			var threadId = parseInt(event["node-id"]);
 			me.threads[threadId].traces.push({
 		        "start": event.time,
-		        "end": me.timeStamps.end,
+		        "end": me.timeStamps.max,
 		        "region": event.name,
 		        "level": level[threadId]
 		    });
