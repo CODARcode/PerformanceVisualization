@@ -11,7 +11,7 @@ class Data {
 		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];
-		for(var i = 0;i<noThreads;i++){
+		for(var i = 0;i<12;i++){
 		    me.threads.push(new Thread(i));
 		}
 		this.messages = [];
@@ -81,7 +81,7 @@ class Data {
 		var me = this;
 		var timerId = parseInt(timerType);
 		profiles.forEach(function(profile){
-			me.threads[profile["process index"]%5].addProfile(profile,timerId);	
+			me.threads[profile["process index"]].addProfile(profile,timerId);		
 		});
 		this.threads.forEach(function(thread){
 			thread.setProfiles(timerId);

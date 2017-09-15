@@ -7,8 +7,8 @@ class TraceVis {
         var me = this;
         this.timeBegin = main.traces.timeStamps.start;
         this.timeEnd = main.traces.timeStamps.end;
-        this.noThreads = main.traces.threads.length;
-
+        this.noThreads = main.traces.noThreads;
+        me.localLocLength = this.noThreads*1.7;
         this.main = main;
         this.m = [20, 50, 0, 30]; //top right bottom left (space between main and mini)
 
@@ -73,14 +73,14 @@ class TraceVis {
             .call(this.brush);
 
 
-        this.main.traces.threads.forEach(function(thread) {
+        this.main.traces.threads.forEach(function(thread, i) {
             thread.main_lane_text = me.mainCanvas.append("g")
                 .attr("class", "main_lane_text");
             thread.itemRect = me.mainCanvas.append("g")
                 .attr("clip-path", "url(#clip)");
             thread.idLabel = me.mainCanvas.append("g")
                 .attr("class", "idLabel").append("text")
-                .text(thread.location)
+                .text( (i<me.main.traces.noThreads)?thread.location:"")
                 .attr("x",-20)
                 .attr("y", function(){
                     return me.y1(thread.location)+40;
@@ -106,7 +106,7 @@ class TraceVis {
         me.y1.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
-		me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
+		//me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
         
         me.updateMessages(brush);
         //brush
@@ -258,7 +258,7 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                return mainHeight * .6 / me.localLocLength - d.level * 5;// / locSets.length;
+                return mainHeight / me.localLocLength - d.level * 5;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);
@@ -278,7 +278,7 @@ class TraceVis {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                var thisHeight = me.mainHeight * .6 / me.localLocLength - d.level * 5;
+                var thisHeight = me.mainHeight / me.localLocLength - d.level * 5;
                 if(thisHeight<5){
                     thisHeight = 5;
                 }

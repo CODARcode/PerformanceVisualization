@@ -5,7 +5,7 @@ class StatisticsVis{
         var me = this;
         this.timeBegin = main.traces.timeBegin;
         this.timeEnd = main.traces.timeEnd;
-        this.noThreads = main.traces.threads.length;
+        this.noThreads = main.traces.noThreads;
         // chart for metedata
 
         this.main = main;

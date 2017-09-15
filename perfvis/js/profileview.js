@@ -8,8 +8,8 @@ class ProfileVis {
         var bb = document.querySelector('#Profiles')
             .getBoundingClientRect();
         var twidth = bb.right - bb.left;
-        var theight = 450;
-        this.m = [20, 90, 0, 90, 0]; //top right bottom left (space between main and mini)
+        var theight = 500;
+        this.m = [-10, 90, 0, 90, 0]; //top right bottom left (space between main and mini)
         this.w = twidth - this.m[1] - this.m[3];
         this.h = theight - this.m[0] - this.m[2];
         this.height = this.h - this.m[4]; //has space between
@@ -64,7 +64,7 @@ class ProfileVis {
 
     updateThread(thread) {
 		var me = this;
-		var barheight = 100;
+		var barheight = 50;//this.h/this.noThread;
 
         thread.profIdLabel
             .attr("y", function(){
