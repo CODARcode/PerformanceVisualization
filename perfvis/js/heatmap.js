@@ -65,7 +65,7 @@ class HeatMap{
         this.mini.append("g").selectAll("fort")
             .data(fort)
             .enter().append("path") //only re-enter updated rect!!!
-            .filter(function(d) { return d.end <= me.main.traces.timeStamps.max})
+            //.filter(function(d) { return d.end <= me.main.traces.timeStamps.max})
             .attr("d", function(d) {
                 var x1 = me.x(d.end);
                 var x2 = me.x(d.start);
@@ -92,7 +92,9 @@ class HeatMap{
             .y(this.y2)
             .on("brushend", function() {
                 var extent = me.brush.extent();
-                me.main.update(extent);
+                me.main.traces.timeStamps.min = extent[0][0];
+                me.main.traces.timeStamps.max = extent[1][0];
+                me.main.set();
             });
 
         this.mini.append("g")

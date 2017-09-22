@@ -12,16 +12,17 @@ class Main {
         this.treemaps = new Treemapview(this);
         this.legend = new Legend(this);
 
-        this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
-        
         this.sendQuery("profiles/0", this.getProfiles);//timers of the profiles.
         this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.        
         this.sendQuery("profiles/2", this.getProfiles);//timers of the profiles.
         this.sendQuery("profiles/3", this.getProfiles);//counters of the profiles.        
         this.sendQuery("profiles/4", this.getProfiles);//timers of the profiles.
         this.sendQuery("profiles/5", this.getProfiles);//counters of the profiles.
-        
-        this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
+                
+        //this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
+        //this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
+        this.init();
+
         this.timerType = 0;
         this.measure = "Calls";
     }
@@ -53,12 +54,19 @@ class Main {
         return me.c20(region);
     }
 
+    set(){
+        var me = this;
+        me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
+        me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
+        
+    }
+
     update(extent) {
         var me = this;
         var fake = false;
         if (extent[0][0] == extent[1][0]) {
-            extent[0][0] = this.traces.timeStamps.start;
-            extent[1][0] = this.traces.timeStamps.end;
+            extent[0][0] = this.traces.timeStamps.min;
+            extent[1][0] = this.traces.timeStamps.max;
             extent[0][1] = 0;
             extent[1][1] = this.traces.threads.length - 1;
             fake = true;
@@ -75,15 +83,11 @@ class Main {
         this.statisticsvis.update(brush);
 
         this.traces.threads.forEach(function(thread,i) {
-            //if(i<me.traces.noThread){
             thread.clear();
             thread.filter(brush);
-            //if(!fake){
             me.detailview.tracevis.updateThread(thread, brush);
-            //}
             me.profilevis.updateThread(thread);
             me.statisticsvis.updateThread(thread);
-        //}
         });
         this.stackedBars.update(brush);
     }
@@ -104,11 +108,6 @@ class Main {
             me.treemaps.updateThread(thread, 0, "Calls");
         });
         me.profilevis.setXAxis(profileMaxX);
-
-        //this.update([
-        //    [0, 0],
-        //    [0, 0]
-        //]);
     }
 
     sendQuery(queryStr, callback) {
@@ -124,7 +123,7 @@ class Main {
     }
     getEvents(me, obj, queryStr) {
         me.traces.setTraces(obj);
-        me.init();    
+        me.update([[0, 0],[0, 0]])
     }
 
     getMessages(me, obj, queryStr){

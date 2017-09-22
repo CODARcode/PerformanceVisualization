@@ -16,7 +16,7 @@ http.createServer(function(request, response) {
         query("messages",{timestamp:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
     } else if (uri.substring(0, 8) == "/events/"){
         var timestamps = uri.substring(8).split(":");
-        query("trace_events",{$or:[{time:{$lte:2900000}},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
+        query("trace_events",{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);

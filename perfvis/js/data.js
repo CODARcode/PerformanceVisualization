@@ -7,7 +7,7 @@ class Data {
                 "MPI","Others"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:6100000,max:6500000,start:0, end:100};
+		this.timeStamps = {min:0,max:1,start:0, end:1};
 		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
 
 		this.threads = [];
@@ -15,13 +15,15 @@ class Data {
 		    me.threads.push(new Thread(i));
 		}
 		this.messages = [];
-
 	}
 
 	setTraces(traceObjs){
 		var me = this;
 		var stack = [];
 		var level = [0,0,0,0,0];
+		me.threads.forEach(function(thread){
+			thread.traces.length = 0;
+		});
 		traceObjs.forEach(function(event){
 			var threadId = parseInt(event["node-id"]);
 			if(threadId === undefined){
