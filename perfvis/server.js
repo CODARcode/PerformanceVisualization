@@ -1,9 +1,8 @@
-//The server file which query the mongodb and return the json objects to the front end.
+//The server file starts a mongodb client, queries the mongodb, and return the json objects to the front end.
 var http = require("http"),
     url = require("url"),
     path = require("path"),
-    fs = require("fs"),
-    port = process.argv[2] || 8888;
+    fs = require("fs");
 var MongoClient = require('mongodb').MongoClient;
 var dburl = "mongodb://localhost:27017/codarvis";
 
@@ -58,7 +57,7 @@ http.createServer(function(request, response) {
         });
     }
 
-}).listen(parseInt(port, 10));
+}).listen(8888, "0.0.0.0"); //listen from public by adding "0.0.0.0"
 
 
 function query(dbName, queryObj, response){
@@ -69,7 +68,6 @@ function query(dbName, queryObj, response){
             response.writeHead(200, {
                 "Content-Type": "text/json"
             });
-            //console.log(result);
             response.end(JSON.stringify(result));
             console.log("Get "+result.length+" documents from "+dbName);
             db.close();
@@ -77,4 +75,4 @@ function query(dbName, queryObj, response){
     });
 }
 
-console.log("Server running on http://localhost:" + port + "/");
+console.log("Server running...");

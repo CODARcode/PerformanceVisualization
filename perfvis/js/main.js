@@ -1,6 +1,13 @@
+//------------------Global setting of vis web app------
+var global_host = "visws.csi.bnl.gov",
+    global_port = 8888;
+
 //--------------------Main function--------------------
 class Main {
-    constructor() {
+    constructor(host, port) {
+        this.host = host;
+        this.port = port;
+
         this.traces = new Data(5);
 
         this.c20 = d3.scale.category20().domain(this.traces.regions);
@@ -113,7 +120,7 @@ class Main {
     sendQuery(queryStr, callback) {
         var me = this;
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "http://localhost:8888/" + queryStr, true);
+        xmlhttp.open("GET", "http://" + me.host + ":" + me.port + "/" + queryStr, true);
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 callback(me, JSON.parse(xmlhttp.responseText), queryStr);
@@ -152,7 +159,7 @@ class Main {
     }
 }
 
-var main = new Main();
+var main = new Main(global_host, global_port);
 $('.vis li > a').click(function(e) {
     $('#vis_type').text(this.innerHTML);
     if(this.innerHTML=="Treemap"){
