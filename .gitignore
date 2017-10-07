@@ -1,5 +1,9 @@
 .DS_Store
 
+.idea/
+
+perfvis/.idea/
+
 perfvis/node_modules/
 
 perfvis/node_modules/connect/HISTORY.md
