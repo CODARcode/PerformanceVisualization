@@ -9,24 +9,26 @@ class TraceVis {
         this.timeEnd = main.traces.timeStamps.end;
         this.noThreads = main.traces.noThreads;
         this.main = main;
-        this.m = [20, 50, 0, 30]; //top right bottom left (space between main and mini)
+        this.m = [40, 50, 0, 30]; //top right bottom left (space between main and mini)
 
         this.w = parentview.w - parentview.leftMargin;
-        this.mainHeight = 600; //has space between
+        this.mainHeight = 2000; //has space between
+        this.bandWidth = (this.mainHeight-this.m[0]) / this.noThreads;
         //scales
-        this.x = d3.scale.linear()
-            .domain([this.timeBegin, this.timeEnd])
-            .range([0, this.w]); //brush, and mini
-        this.x1 = d3.scale.linear()
+        this.x1 = d3.scaleLinear()
             .domain([this.timeBegin, this.timeEnd])
             .range([0, this.w]); //main
-        this.y1 = d3.scale.linear()
-            .domain([0, this.noThreads])
-            .range([20, this.mainHeight]); //main
+
+        var ranges = [];
+        for(var i = 0;i<main.traces.nodeList.length;i++){
+            ranges.push(me.m[0]+i*me.bandWidth);
+        }
+        this.y1 = d3.scaleOrdinal()
+            .domain(main.traces.nodeList)
+            .range(ranges);
         //axis
-        this.mainAxis = d3.svg.axis()
+        this.mainAxis = d3.axisBottom()
             .scale(this.x1)
-            .orient("bottom")
             .tickFormat(main.tickByTime);
         this.mouseOverPos;
 
@@ -52,40 +54,13 @@ class TraceVis {
             .call(this.mainAxis);
 
 
-        //brush
-        this.brush = d3.svg.brush()
-            .x(this.x1)
-            .y(this.y1)
-            .on("brush", function() {
-                me.mousebrush.style("visibility","visible");
-            })
-            .on("brushend", function() {
-                var extent = me.brush.extent();
-                me.main.update(extent);
-                me.mousebrush.style("visibility","hidden");
-            });
-        this.mousebrush =  this.mainCanvas.append("g")
-            .attr("class", "x brush")
-            .call(this.brush);
-
-
         this.main.traces.threads.forEach(function(thread, i) {
             thread.main_lane_text = me.mainCanvas.append("g")
                 .attr("class", "main_lane_text");
             thread.itemRect = me.mainCanvas.append("g")
                 .attr("clip-path", "url(#clip)");
             thread.idLabel = me.mainCanvas.append("g")
-                .attr("class", "idLabel").append("text")
-                .text( (i<me.main.traces.noThreads)?thread.location:"")
-                .attr("x",-20)
-                .attr("y", function(){
-                    return me.y1(thread.location)+40;
-                })
-                .attr("font-size", "16px")
-                .attr("font-family", "sans-serif")
-                .on('click', function(d){
-                    me.main.stackedBars.setIndex(thread.location);
-                });;
+                .attr("class", "idLabel");
         });
 
         this.messageLines = this.mainCanvas.append("g")
@@ -99,16 +74,14 @@ class TraceVis {
 		var me = this;
         // set scales
         me.x1.domain([brush.x0, brush.x1]);
-        me.y1.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
-		//me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
-        
+        var ranges = [];
+        for(var i = 0;i<brush.nodes.length;i++){
+            ranges.push(me.m[0]+i*me.bandWidth);
+        }
+        me.y1.domain(brush.nodes).range(ranges);
         me.updateMessages(brush);
-        //brush
-        this.brush
-            .x(this.x1)
-            .y(this.y1);
     }
 
     updateMessages(brush) {
@@ -143,8 +116,8 @@ class TraceVis {
                 var x1 = me.x1(d.end);
                 var x2 = me.x1(d.start);
                 var y1 = me.y1(d.nodestart);
-                var y2 = me.y1(d.nodestart+1);
-                var y3 = me.y1(d.nodeend+1);
+                var y2 = me.y1(d.nodestart)+this.bandWidth;
+                var y3 = me.y1(d.nodeend)+this.bandWidth;
                 var y4 = me.y1(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
@@ -165,7 +138,7 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("cy", function(d) {
-                return me.y1(d.source+1/2);
+                return me.y1(d.source);
             })
             .attr("r", 2)
             .attr("fill","black");
@@ -174,7 +147,7 @@ class TraceVis {
                 return me.x1(d.end);
             })
             .attr("cy", function(d) {
-                return me.y1(d.destination+1/2);
+                return me.y1(d.destination);
             })
             .attr("r", 2)
             .attr("fill","black");
@@ -183,19 +156,19 @@ class TraceVis {
 
         var messagesvg = this.messageLines.selectAll("line")
             .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-
+            console.log(linkMessages);
         messagesvg.enter().append("line") //only re-enter updated rect!!!
             .attr("x1", function(d) {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source+1/2);
+                return me.y1(d.source);
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination+1/2);
+                return me.y1(d.destination);
             })
             .attr("stroke","white")
             .attr("stroke-width", function(){
@@ -210,13 +183,13 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source+1/2);
+                return me.y1(d.source);
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination+1/2);
+                return me.y1(d.destination);
             })
             .attr("stroke","black")
             .attr("stroke-width", function(){
@@ -227,20 +200,24 @@ class TraceVis {
                 }
             });
         messagesvg.exit().remove();
-
-
     }
 
     updateThread(thread, brush) {
 		var me = this;
 		var locSets = thread.locSets;
 
-        thread.idLabel
+        var idLebals = thread.idLabel.selectAll("text").data([0]);
+        idLebals.enter().append("text")
+            .text(thread.location)
+            .attr("x",-20)
             .attr("y", function(){
-                return me.y1(thread.location+1/2);
+                return me.y1(thread.location)+me.bandWidth/2;
             })
-            .attr("font-size", "16px")
-            .attr("font-family", "sans-serif");
+            .attr("font-size", "12px")
+            .attr("font-family", "sans-serif")
+            .on('click', function(d){
+                me.main.stackedBars.setIndex(thread.location);
+            });
 
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
@@ -254,20 +231,16 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y", function(d) {
-                var thisHeight = me.y1(1/2) - d.level * 4;
-                if(thisHeight<5){
-                    thisHeight = 5;
-                }
-                return me.y1(thread.location+1/2) -thisHeight/2;
+                var thisHeight = (me.bandWidth-4) * (thread.max_level+1 - d.level)/(thread.max_level+1 - thread.min_level);
+                if(thisHeight<1) thisHeight = 1;
+                return me.y1(thread.location) + me.bandWidth/2 -thisHeight/2;
             })
             .attr("width", function(d) {
                 return Math.max(me.x1(d.end) - me.x1(d.start), 1);
             })
             .attr("height", function(d) {
-                var thisHeight = me.y1(1/2) - d.level * 4;
-                if(thisHeight<5){
-                    thisHeight = 5;
-                }
+                var thisHeight = (me.bandWidth-4) * (thread.max_level+1 - d.level)/(thread.max_level+1 - thread.min_level);
+                if(thisHeight<1) thisHeight = 1;
                 return thisHeight;// / locSets.length;
             })
             .attr("fill", function(d) {
@@ -308,7 +281,7 @@ class TraceVis {
                 })
                 .attr("x", -me.m[1])
                 .attr("y", function() {
-                    return me.y1(thread.location + .5);
+                    return me.y1(thread.location);
                 })
                 .attr("dy", ".5ex")
                 .attr("text-anchor", "end")
@@ -318,11 +291,11 @@ class TraceVis {
             thread.main_lane_text.append("line")
                 .attr("x1", 0)
                 .attr("y1", function() {
-                    return me.y1(thread.location + 1);
+                    return me.y1(thread.location);
                 })
                 .attr("x2", me.w)
                 .attr("y2", function() {
-                    return me.y1(thread.location + 1);
+                    return me.y1(thread.location);
                 })
                 .attr("stroke", "lightgray");
         }

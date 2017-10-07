@@ -8,23 +8,23 @@ class ProfileVis {
         var bb = document.querySelector('#Profiles')
             .getBoundingClientRect();
         var twidth = bb.right - bb.left;
-        var theight = 500;
-        this.m = [-10, 90, 0, 90, 0]; //top right bottom left (space between main and mini)
+        var theight = 700;
+        this.m = [10, 90, 0, 90, 0]; //top right bottom left (space between main and mini)
         this.w = twidth - this.m[1] - this.m[3];
         this.h = theight - this.m[0] - this.m[2];
         this.height = this.h - this.m[4]; //has space between
 		this.measure = "Calls";
 
         var formatPercent = d3.format(".0%");
-        this.x = d3.scale.linear()
+        this.x = d3.scaleLinear()
             .domain([0, 1])
             .range([0, this.w]); //main
 
         var arr = [0, 1, 2, 3];
 
-        this.y = d3.scale.linear()
+        this.y = d3.scaleLinear()
             .domain([0, this.noThreads])
-            .range([0, this.h]); //main
+            .range([this.m[4], this.h]); //main
 
         this.svg = d3.select("#Profiles")
             .append("svg")
@@ -34,9 +34,8 @@ class ProfileVis {
             .append("g")
             .attr("transform", "translate(" + this.m[3] + "," + this.m[0] + ")");
 
-        this.xaxis = d3.svg.axis()
+        this.xaxis = d3.axisTop()
             .scale(this.x)
-            .orient("top")
             .tickFormat(formatPercent);
 
         this.main.traces.threads.forEach(function(thread) {
@@ -45,17 +44,17 @@ class ProfileVis {
                 .text(thread.location)
                 .attr("x",-20)
                 .attr("y", function(){
-                    return me.y(thread.location)+40;
+                    return me.y(thread.location);
                 })
-                .attr("font-size", "16px")
+                .attr("font-size", "12px")
                 .attr("font-family", "sans-serif");
         });
     }
 
     update(brush) {
 		var me = this;
-        me.y.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
-        me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
+        //me.y.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
+        //me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
     }
 
     setMeasure(measure){
@@ -64,11 +63,11 @@ class ProfileVis {
 
     updateThread(thread) {
 		var me = this;
-		var barheight = 50;//this.h/this.noThread;
+		var barheight = me.h/me.noThreads-3;
 
         thread.profIdLabel
             .attr("y", function(){
-                return me.y(thread.location)+40;
+                return me.y(thread.location);
             });
 
         thread.groups.selectAll("rect")
@@ -79,9 +78,9 @@ class ProfileVis {
                 return me.x(d.y0);
             })
             .attr("y", function(d) {
-                return me.y(d.x) + (barheight - me.m[0]) / 4;
+                return me.y(d.x-1);
             })
-            .attr("height", (barheight - me.m[0]) / 2)
+            .attr("height", barheight)
             .attr("width", function(d) {
                 return me.x(d.y0 + d.y) - me.x(d.y0);
             })
@@ -109,7 +108,7 @@ class ProfileVis {
     }
 
     setXAxis(max){
-        this.x = d3.scale.linear()
+        this.x = d3.scaleLinear()
             .domain([0, max])
             .range([0, this.w]); //main
     }
@@ -136,7 +135,7 @@ class ProfileVis {
             count[i] = 0;
         })
 
-        thread.stacks = d3.layout.stack()(Object.keys(profiles).map(function(d,i) {
+        thread.stacks = d3.stack()(Object.keys(profiles).map(function(d,i) {
             var arr = d.split("=>");
             var region = arr[arr.length - 1];
             var index = regions.indexOf(region);
@@ -155,7 +154,7 @@ class ProfileVis {
         //console.log(thread.stacks);
         this.svg.selectAll("g.thread" + thread.location).remove();
 
-        var color = d3.scale.category20c();
+        //var color = d3.scale.category20c();
 
         thread.groups = this.svg.selectAll("g.thread" + thread.location)
             .data(thread.stacks)

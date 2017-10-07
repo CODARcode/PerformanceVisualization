@@ -12,18 +12,18 @@ class MessageVis {
 
         this.max = 0.1;
         this.canvasHeight = 60; // 20 is for the height of axis
+        this.thisWidth = thisWidth;
         //scales
-        this.x = d3.scale.linear()
+        this.x = d3.scaleLinear()
             .domain([timeBegin, timeEnd])
             .range([0, thisWidth]); //brush, and mini
 
-        this.y = d3.scale.linear()
+        this.y = d3.scaleLinear()
             .domain([0, this.max])
             .range([this.canvasHeight, 0]); //brush, and mini
 
-        this.axis = d3.svg.axis()
-            .scale(this.y)
-            .orient("left").ticks(3);
+        this.axis = d3.axisLeft()
+            .scale(this.y).ticks(3);
 
         this.g = parentview.chart.append("g")
             .attr("transform", "translate("+parentview.leftMargin+",0)")
@@ -97,11 +97,32 @@ class MessageVis {
         rects.exit().remove();
 	}
 
+    initBrush(){
+        //brush
+        //brush
+        var me = this;
+        this.brush = d3.brushX()
+            .extent([[0, 0], [me.thisWidth, me.canvasHeight]])
+            .on("end", brushmoved);
+
+        this.g.append("g")
+            .attr("class", "x brush")
+            .call(this.brush);
+
+        function brushmoved() {
+            var s = d3.event.selection;
+            if (s != null) {
+                me.main.update({x0:me.x.invert(s[0]),x1:me.x.invert(s[1]),nodes:[]});
+            }
+        }
+    }
+
 	update(brush){
 		//filter data
 		var me = this;
 		me.x.domain([brush.x0, brush.x1]);
 		me.filterData(brush)
 		me.draw();
+        me.initBrush()
 	}
 }

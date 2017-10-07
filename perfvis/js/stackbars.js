@@ -25,12 +25,11 @@ class StackedBars{
             .attr("height", this.h)
             .attr("class", "main");
 
-        this.x = d3.scale.linear()
+        this.x = d3.scaleLinear()
             .domain([this.timeBegin, this.timeEnd])
             .range([0, this.w]); //brush, and mini
-        this.mainAxis = d3.svg.axis()
+        this.mainAxis = d3.axisTop()
             .scale(this.x)
-            .orient("top")
             .tickFormat(main.tickByTime);
 
         this.mainAxisSvg = this.chart.append("g")

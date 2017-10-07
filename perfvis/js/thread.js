@@ -17,11 +17,11 @@ class Thread {
         this.itemRect = {};
 		
 		//statistic vis
-        this.barRect = {};
+        this.barRect;
         this.idLabel = {};
 
         //profile vis
-        this.groups = {};
+        this.groups;
 		me.stacks = [];
 		this.visItems = [];
 		this.locSets = []; //the array of region sets for all locations
@@ -58,14 +58,14 @@ class Thread {
 	
 	clear(){
 		this.itemRect.selectAll("rect").remove();
+		this.idLabel.selectAll("text").remove();
 		this.main_lane_text.selectAll("text").remove();
 		this.main_lane_text.selectAll("line").remove();
 		this.nodeRect.selectAll("rect").remove();
 		this.nodeText.selectAll("text").remove();
-
         this.barRect.selectAll("rect").remove();
-        this.barRect.selectAll("text").remove();
-		
+    	this.barRect.selectAll("text").remove();
+
         this.groups.selectAll("rect").remove();
         this.tooltip.selectAll("text").remove();
 	}
@@ -73,8 +73,7 @@ class Thread {
 	filter(brush){
 		var me = this;
 		var visItems = me.traces.filter(function(d) {
-			return d.start < brush.x1 && d.end > brush.x0 &&
-				me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
+			return d.start < brush.x1 && d.end > brush.x0;// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
 		});
 
 		// regions in each location, no matter if it is within brush
@@ -83,11 +82,15 @@ class Thread {
 		var locSets = []; //the array of region sets for all locations
 		var locMaps = new Map(); //the array of (region, time period) maps for all locations
 		me.min_level=Number.MAX_SAFE_INTEGER;
+		me.max_level=0;
 		visItems.forEach(function(visItem) {
 			// add new item, include redundant ones
 			locSets.push(visItem.region);
 			if(visItem.level<me.min_level){
 				me.min_level = visItem.level;
+			}
+			if(visItem.level>me.max_level){
+				me.max_level = visItem.level;
 			}
 			// update location maps
 			var val = locMaps.get(visItem.region);

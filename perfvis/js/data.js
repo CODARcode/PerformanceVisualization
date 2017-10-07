@@ -1,26 +1,46 @@
 //The data is stored here. Including traces, messages, and profiles.
 //The traces and profiles are stored in their threads(nodes).
 class Data {
-	constructor(noThreads){
+	constructor(noThreads, timeMax){
 		var me = this;
 		this.regions = ["TAU_USER", "TAU_DEFAULT", "TAU_CALLPATH",
                 "MPI","Others"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:0,max:1,start:0, end:1};
+		this.timeStamps = {min:0,max:timeMax,start:0, end:1};;
 		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
+		this.nodeList = [];
 
 		this.threads = [];
-		for(var i = 0;i<12;i++){
+		for(var i = 0;i<noThreads;i++){
 		    me.threads.push(new Thread(i));
+		    this.nodeList.push(i);
 		}
 		this.messages = [];
+	}
+
+	updateSelectedNodes(nodeid){
+		if(this.nodeList.length==this.noThreads){
+			this.nodeList = [nodeid];
+		}else{
+			var index = this.nodeList.indexOf(nodeid);
+			if(index==-1){
+				this.nodeList.push(nodeid);
+			}else{
+				this.nodeList.splice(index, 1);
+			}
+		}
+		if(this.nodeList.length==0){
+			for(var i = 0;i<this.noThreads;i++){
+		    	this.nodeList.push(i);
+			}
+		}
 	}
 
 	setTraces(traceObjs){
 		var me = this;
 		var stack = [];
-		var level = [0,0,0,0,0];
+		var level = Array(me.noThreads).fill(0);
 		me.threads.forEach(function(thread){
 			thread.traces.length = 0;
 		});
@@ -45,7 +65,7 @@ class Data {
 			}else if(event["event-type"] == "entry"){
 				stack.push(event);
 				level[threadId]++;
-			}else if (event["event-type"] == "counter"||event["event-type"] == "trace end"){
+			}else if (event["event-type"] == "counter"||event["event-type"] == "send"||event["event-type"] == "trace end"){
 			}else{
 			    console.log("ERROR! "+event["event-type"]);
 			}
@@ -76,7 +96,7 @@ class Data {
 
 	setMessages(messages){
 		this.messages = messages;
-		//console.log(messages);
+		console.log(messages);
 	}
 
 	setProfiles(profiles, timerType){
@@ -88,5 +108,6 @@ class Data {
 		this.threads.forEach(function(thread){
 			thread.setProfiles(timerId);
 		});
+
 	}
 }

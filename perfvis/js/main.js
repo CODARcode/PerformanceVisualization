@@ -1,30 +1,45 @@
 //--------------------Main function--------------------
 class Main {
     constructor() {
-        this.traces = new Data(5);
+        this.sendQuery("overview/", this.initData);//timers of the profiles.
+    }
 
-        this.c20 = d3.scale.category20().domain(this.traces.regions);
-        this.overview = new Overview(this);
-        this.detailview = new Detailview(this);
-        this.profilevis = new ProfileVis(this);
-        this.statisticsvis = new StatisticsVis(this);
-        this.stackedBars = new StackedBars(this);
-        this.treemaps = new Treemapview(this);
-        this.legend = new Legend(this);
+    initData(me, obj, queryStr){
+        //set overview data
+        var traceArray = obj[0]["traces"];
+        var messageArray = obj[0]["messages"];
+        var nodeNum = traceArray.length;
+        var timeMax = 0;
 
-        this.sendQuery("profiles/0", this.getProfiles);//timers of the profiles.
-        this.sendQuery("profiles/1", this.getProfiles);//counters of the profiles.        
-        this.sendQuery("profiles/2", this.getProfiles);//timers of the profiles.
-        this.sendQuery("profiles/3", this.getProfiles);//counters of the profiles.        
-        this.sendQuery("profiles/4", this.getProfiles);//timers of the profiles.
-        this.sendQuery("profiles/5", this.getProfiles);//counters of the profiles.
-                
-        //this.sendQuery("messages/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getMessages);//Queries the messages
-        //this.sendQuery("events/" + this.traces.timeStamps.min + ":" + this.traces.timeStamps.max, this.getEvents);//entry and exit events of the traces.
-        this.init();
+        traceArray.forEach(function(node){
+            node.forEach(function(d){
+                var time = parseInt(d["_id"]["max"]);
+                if(time>timeMax){
+                    timeMax = time;
+                }
+            });
+        });
+        me.traces = new Data(nodeNum, timeMax);
+        me.c20 = d3.scaleOrdinal(d3.schemeCategory20).domain(me.traces.regions);
+        me.timerType = 0;
+        me.measure = "Calls";
 
-        this.timerType = 0;
-        this.measure = "Calls";
+
+        me.overview = new Overview(me, traceArray, messageArray, timeMax);
+        me.detailview = new Detailview(me);
+        me.profilevis = new ProfileVis(me);
+        me.statisticsvis = new StatisticsVis(me);
+        me.stackedBars = new StackedBars(me);
+        me.treemaps = new Treemapview(me);
+        me.legend = new Legend(me);
+
+        me.sendQuery("profiles/0", me.getProfiles);//timers of the profiles.
+        me.sendQuery("profiles/1", me.getProfiles);//counters of the profiles.        
+        me.sendQuery("profiles/2", me.getProfiles);//timers of the profiles.
+        me.sendQuery("profiles/3", me.getProfiles);//counters of the profiles.        
+        me.sendQuery("profiles/4", me.getProfiles);//timers of the profiles.
+        me.sendQuery("profiles/5", me.getProfiles);//counters of the profiles.
+        me.initProfiles();
     }
 
     tickByTime(d){
@@ -38,7 +53,11 @@ class Main {
     }
     getColor(name){
         var me = this;
-        return me.c20(states[name]);
+        var key = states[name];
+        if(!key){
+            key = "Others";
+        }
+        return me.c20(key);
     }
 
     getTwoColor(index){
@@ -58,45 +77,39 @@ class Main {
         var me = this;
         me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
         me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
-        
     }
 
     update(extent) {
         var me = this;
         var fake = false;
-        if (extent[0][0] == extent[1][0]) {
-            extent[0][0] = this.traces.timeStamps.min;
-            extent[1][0] = this.traces.timeStamps.max;
-            extent[0][1] = 0;
-            extent[1][1] = this.traces.threads.length - 1;
+        if (extent.x0 == extent.x1) {
+            extent.x0 = this.traces.timeStamps.min;
+            extent.x1 = this.traces.timeStamps.max;
             fake = true;
         }
-        var brush = {
-            x0: extent[0][0],
-            y0: extent[0][1],
-            x1: extent[1][0],
-            y1: extent[1][1]
-        };
+        if(extent.nodes.length==0){
+            extent.nodes = me.traces.nodeList;//all
+        }
 
-        this.detailview.update(brush);
-        this.profilevis.update(brush);
-        this.statisticsvis.update(brush);
+        this.detailview.update(extent);
+        this.profilevis.update(extent);
+        this.statisticsvis.update(extent);
 
         this.traces.threads.forEach(function(thread,i) {
             thread.clear();
-            thread.filter(brush);
-            me.detailview.tracevis.updateThread(thread, brush);
-            me.profilevis.updateThread(thread);
-            me.statisticsvis.updateThread(thread);
+            if(me.traces.nodeList.indexOf(i)!=-1){
+                thread.filter(extent);
+                me.detailview.tracevis.updateThread(thread, extent);
+                me.profilevis.updateThread(thread);
+                me.statisticsvis.updateThread(thread);
+            }
         });
-        this.stackedBars.update(brush);
+        this.stackedBars.update(extent);
     }
 
-    init() {
+    initProfiles() {
         var me = this;
-        //this.overview.init();
         this.detailview.init();
-        //this.overview.drawlegend(this.traces.regions);
 
         var profileMaxX = 0;
         this.traces.threads.forEach(function(thread) {
@@ -123,7 +136,7 @@ class Main {
     }
     getEvents(me, obj, queryStr) {
         me.traces.setTraces(obj);
-        me.update([[0, 0],[0, 0]])
+        me.update({x0:0,x1:0,nodes:[]})
     }
 
     getMessages(me, obj, queryStr){
@@ -197,4 +210,7 @@ $('.sec li > a').click(function(e) {
     $('#counter').text(this.innerHTML);
     main.measure = this.innerHTML;
     main.setMeasure(main.measure,main.timerType);
+});
+$(document).ready(function() {  
+   $(".dropdown-menu li a")[0].click();
 });

@@ -10,13 +10,16 @@ var dburl = "mongodb://localhost:27017/codarvis";
 http.createServer(function(request, response) {
     var uri = url.parse(request.url).pathname,
         filename = path.join(process.cwd(), uri);
+    //console.log(uri);
 
-    if (uri.substring(0, 10) == "/messages/"){
+    if (uri.substring(0, 10) == "/overview/"){
+        query("overview",{},response);
+    }else if (uri.substring(0, 10) == "/messages/"){
         var timestamps = uri.substring(10).split(":");
-        query("messages",{timestamp:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
+        query("trace_events",{$and:[{$or:[{"event-type":"send"},{"event-type":"counter"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 8) == "/events/"){
         var timestamps = uri.substring(8).split(":");
-        query("trace_events",{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}},response);
+        query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);

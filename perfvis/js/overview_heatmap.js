@@ -1,27 +1,25 @@
 // The overview of the traces. It use opacity to show the number of events in a time range.
 class HeatMap{
-	constructor(main, overview, ypos){
+	constructor(main, overview, ypos, traceArray, timeEnd){
         var stageWidth = overview.w - overview.leftMargin;
 		var me = this;
         this.leftMargin = overview.leftMargin;
         this.noThreads = traceArray.length;//
-        var timeBegin = 0;
-        var timeEnd = 6310000;
         this.main = main;
+        this.traceArray = traceArray;
 
-        this.bandWidth = (overview.h-ypos)/this.noThreads - 5;
+        this.bandWidth = (overview.h-ypos)/this.noThreads - 1;
         this.miniHeight = this.noThreads * this.bandWidth + 20; // 20 is for the height of axis
         //scales
-        this.x = d3.scale.linear()
-            .domain([timeBegin, timeEnd])
+        this.x = d3.scaleLinear()
+            .domain([0, timeEnd])
             .range([0, stageWidth]); //brush, and mini
-        this.y2 = d3.scale.linear()
+        this.y2 = d3.scaleLinear()
             .domain([0, this.noThreads])
             .range([20, overview.h-ypos+20]); //mini
         //axis
-        this.miniAxis = d3.svg.axis()
+        this.miniAxis = d3.axisBottom()
             .scale(this.x)
-            .orient("bottom")
             .tickFormat(main.tickByTime);
 
         this.mini = overview.chart.append("g")
@@ -35,30 +33,40 @@ class HeatMap{
             .attr("class", "x axis")
             .call(this.miniAxis);
 
-
 	}
+    init(){
+        var me = this;
+        this.traceArray.forEach(function(d,i){
+            me.initNode(d,i);
+        });
+    }
 
-    init(data, id) {
+    initNode(data, id) {
         var me = this;
         this.mini.append("text")
             .attr("x",-me.leftMargin)
-            .attr("y",me.y2(id)+15)
-            .text("node-id: "+id)
-            .attr("font-size", "16px") 
-            .attr("font-family", "sans-serif");
+            .attr("y",me.y2(id))
+            .text(id)
+            .attr("font-size", "12px") 
+            .attr("font-family", "sans-serif")
+            .attr("alignment-baseline", "hanging")
+            .on('click', function(d){
+                me.main.traces.updateSelectedNodes(id);
+                me.main.update({x0:0,x1:0,nodes:[]});
+            });
         this.mini.append("g").selectAll("miniItems")
             .data(data)
             .enter().append("rect")
-            .attr("x", function(d,i) {
-                return me.x(i*10000);
+            .attr("x", function(d) {
+                return me.x(d["_id"]["min"]);
             })
-            .attr("y", me.y2(id)) //4 means to leave a little distance
+            .attr("y", me.y2(id))
             .attr("fill", "gray")
             .attr("fill-opacity", function(d){
-                return d/100;
+                return 10*d["count"]/(d["_id"]["max"] - d["_id"]["min"]);
             })
-            .attr("width", function(d, i) {
-                return Math.max((me.x((i+1)*10000) - me.x(i*10000)), 1);
+            .attr("width", function(d) {
+                return Math.max(me.x(d["_id"]["max"] - d["_id"]["min"]), 1);
             })
             .attr("height", me.bandWidth);
 
@@ -83,22 +91,4 @@ class HeatMap{
                 return "filename: "+d.file;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
     }
-
-    initBrush(){
-        //brush
-        var me = this;
-        this.brush = d3.svg.brush()
-            .x(this.x)
-            .y(this.y2)
-            .on("brushend", function() {
-                var extent = me.brush.extent();
-                me.main.traces.timeStamps.min = extent[0][0];
-                me.main.traces.timeStamps.max = extent[1][0];
-                me.main.set();
-            });
-
-        this.mini.append("g")
-            .attr("class", "x brush")
-            .call(this.brush);
-	}
 }

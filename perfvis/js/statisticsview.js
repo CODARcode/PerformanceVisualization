@@ -1,7 +1,6 @@
 //Statistic view shows the summarized execution time of the functions in the selected time range
 class StatisticsVis{
 	constructor(main){
-		
         var me = this;
         this.timeBegin = main.traces.timeBegin;
         this.timeEnd = main.traces.timeEnd;
@@ -12,23 +11,25 @@ class StatisticsVis{
         var bb = document.querySelector('#Statistics')
                     .getBoundingClientRect();
         var mwidth = bb.right - bb.left;
-        var mheight = 500;
+        var mheight = 1000;
         this.mm = [20, 20, 5, 15, 120]; //top right bottom left (space for label texts)
         this.metaw = mwidth - this.mm[1] - this.mm[3];
         this.metah = mheight - this.mm[0] - this.mm[2];
-        this.metaHeight = this.metah;
+        this.bandWidth = this.metah / this.noThreads;
         //scale
-        this.y1 = d3.scale.linear()
-            .domain([0, this.noThreads])
-            .range([0, this.metah]); //main
-        this.metax = d3.scale.linear()
+        this.metax = d3.scaleLinear()
             .domain([0, this.timeEnd - this.timeBegin])
             .range([0, this.metaw- this.mm[4]]); //metamain, leave space for text
 
-        //axis
-        this.metaAxis = d3.svg.axis()
+        var ranges = [];
+        for(var i = 0;i<main.traces.nodeList.length;i++){
+            ranges.push(me.mm[0]+i*me.bandWidth);
+        }
+        this.y1 = d3.scaleOrdinal()
+            .domain(main.traces.nodeList)
+            .range(ranges);        //axis
+        this.metaAxis = d3.axisTop()
             .scale(this.metax)
-            .orient("top")
             .tickFormat(main.tickByTime);
 
         this.mouseOverPos;
@@ -58,11 +59,16 @@ class StatisticsVis{
 	update(brush){
 		var me = this;
         // set scales
-        me.y1.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
+        //me.y1.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
         me.metax.domain([0, brush.x1 - brush.x0]);
         //update main x axis
-        me.metaAxisSvg.call(me.metaAxis);
-        me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
+        me.metaAxisSvg.call(me.metaAxis);        
+        var ranges = [];
+        for(var i = 0;i<brush.nodes.length;i++){
+            ranges.push(me.mm[0]+(i+1)*me.bandWidth);
+        }
+        me.y1.domain(brush.nodes).range(ranges);
+        //me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
 	}
 	updateThread(thread){
 		var me = this;
@@ -70,32 +76,18 @@ class StatisticsVis{
 		var locMaps = thread.locMaps;
         //------- plot bars -----------
         var bars = thread.barRect.selectAll("rect")
-            .data(locSets)
-            .attr("x", me.mm[4])
-            .attr("y", function(d) {
-                return me.y1(i) + 10 + locSets.indexOf(d) * me.metaHeight * .8 / me.localLocLength / locSets.length;
-            })
-            .attr("width", function(d) {
-                return Math.max(metax(locMaps.get(d)), 1);
-            })
-            .attr("height", function(d) {
-                return metaHeight * .8 / me.localLocLength / locSets.length;
-            })
-            .attr("fill", function(d) {
-                return me.main.getColor(d);
-            });
+            .data(locSets);
 
         bars.enter().append("rect")
             .attr("x", me.mm[4])
             .attr("y", function(d) {
-				//console.log(me.y1(thread.location));
-                return me.y1(thread.location) + 10 + locSets.indexOf(d) * me.metaHeight * .8 / me.localLocLength / locSets.length;
+                return me.y1(thread.location) + locSets.indexOf(d) * (me.bandWidth-2) / locSets.length;
             })
             .attr("width", function(d) {
                 return Math.max(me.metax(locMaps.get(d)), 1);
             })
             .attr("height", function(d) {
-                return me.metaHeight * .8 / me.localLocLength / locSets.length;
+                return (me.bandWidth-2) / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d);
@@ -113,22 +105,11 @@ class StatisticsVis{
 
         //------- plot labels ----------
         var labels = thread.barRect.selectAll("text")
-            .data(locSets)
-            .attr("x", me.mm[4] - 2)
-            .attr("y", function(d) {
-                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
-                return me.y1(i) + 10 + (locSets.indexOf(d) + 0.5) * sh;
-            }) //for text alignment
-            .style("font-size", function(d) {
-                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
-                sh = Math.max(Math.min(~~sh, 13), 8); //floor
-                return sh.toString() + "px";
-            });
+            .data(locSets);
 
         labels.enter().append("text")
             .text(function(d,i) {
-
-                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
+                var sh = (me.bandWidth-2) / locSets.length;
                 var skip = (8>sh)?Math.ceil(8/sh):0;
 
                 if(skip==0||i%skip==0){
@@ -140,13 +121,13 @@ class StatisticsVis{
             })
             .attr("x", me.mm[4] - 2)
             .attr("y", function(d) {
-                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
+                var sh = (me.bandWidth-2) / locSets.length;
                 return me.y1(thread.location) + 10 + (locSets.indexOf(d) + 0.5) * sh;
             }) //for text alignment
             .attr("dy", ".5ex")
             .attr("text-anchor", "end")
             .style("font-size", function(d) {
-                var sh = me.metaHeight * .8 / me.localLocLength / locSets.length;
+                var sh = (me.bandWidth-2) / locSets.length;
                 sh = Math.max(Math.min(~~sh, 13), 8);
                 return sh.toString() + "px";
             });

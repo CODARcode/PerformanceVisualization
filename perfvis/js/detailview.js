@@ -11,7 +11,7 @@ class Detailview{
         this.m = [10, 10, 0, 10, 0]; //top right bottom left (space between main and mini)
 
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
-        this.h = 680 - this.m[0] - this.m[2];
+        this.h = 1080 - this.m[0] - this.m[2];
 
         this.chart = d3.select("#Detailview")
             .append("svg")

@@ -9,6 +9,7 @@ class Treemapview{
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
         this.h = 300 - this.m[0] - this.m[2];
 
+        this.noThreads = main.traces.noThreads;//threads.length;
         this.chart = d3.select("#Treemaps")
             .append("svg")
             .attr("width", this.w + this.m[1] + this.m[3])
@@ -41,31 +42,23 @@ class Treemapview{
         }else{
             profiles = thread.counterProfiles[index];
         }
+        
+        this.chart.selectAll("rect.thread" + thread.location).remove();
+        var color = d3.scaleOrdinal(d3.schemeCategory20);
+
         var array = [];
         Object.keys(profiles).forEach(function(d) {
-            array.push({"name":d,"size":profiles[d][measure]});
+            array.push({"name":d,"children":[{"name":d,"size":profiles[d][measure]}]});
         })
-        //console.log(array);
+		var treemap = d3.treemap().size([width, height])
+        var root = d3.hierarchy(array, (d) => d.children).sum((d) => d.size);
+        var tree = treemap(root)
 
-        var td = {"children":array};
-
-    	var color = d3.scale.category20c();
-        //console.log(td);
-
-		var treemap = d3.layout.treemap()
-    		.size([width, height])
-    		.sticky(true)
-    		.value(function(d) { return d.size; });
-
-        this.chart.selectAll("rect.thread" + thread.location).remove();
-
-
-		var node = this.chart.datum(td).selectAll("thread" + thread.location)
-		    .data(treemap.nodes)
+		var node = this.chart.datum(root).selectAll("thread" + thread.location)
+		    .data(tree.leaves())
 		    	.enter()
 		    	.append("rect")
 		      .attr("class", "thread" + thread.location)
-		      .call(position)
 		      .attr("fill", function(d) {
 		          return d.name == 'tree' ? '#fff' : color(d.name); })
 		      .append('title')
@@ -73,12 +66,5 @@ class Treemapview{
 		          // compute font size based on sqrt(area)
 		          return Math.max(20, 0.18*Math.sqrt(d.area))+'px'; })
 		      .text(function(d) { return d.children ? null : d.name; });
-	 
-		function position() {
-	  		this.attr("x", function(d) { return (width+30)*thread.location + d.x + "px"; })
-	      		.attr("y", function(d) { return d.y + "px"; })
-	      		.attr("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
-	      		.attr("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
-		}
 	}
 }

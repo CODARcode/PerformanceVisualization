@@ -11,7 +11,7 @@ class Legend{
             .attr("width", twidth)
             .attr("height", theight)
             .attr("class", "chart")
-		  	.attr("transform", function(d, i) { return "translate(-30,0)"; })
+		  	//.attr("transform", function(d, i) { return "translate(0,0)"; })
             .append("g");
 
 		var legend = svg.selectAll(".legend")
