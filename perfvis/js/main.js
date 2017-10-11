@@ -1,6 +1,10 @@
+//------------------Global setting of vis web app------
+var global_host = "visws.csi.bnl.gov",
+    global_port = 8000;
+
 //--------------------Main function--------------------
 class Main {
-    constructor() {
+    constructor(host, port) {
         this.sendQuery("overview/", this.initData);//timers of the profiles.
     }
 
