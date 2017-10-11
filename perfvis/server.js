@@ -60,7 +60,7 @@ http.createServer(function(request, response) {
         });
     }
 
-}).listen(8888, "0.0.0.0"); //listen from public by adding "0.0.0.0"
+}).listen(8000, "0.0.0.0"); //listen from public by adding "0.0.0.0"
 
 
 function query(dbName, queryObj, response){
@@ -78,4 +78,4 @@ function query(dbName, queryObj, response){
     });
 }
 
-console.log("Server running...");
+console.log("Server running on visws.csi.bnl.gov:8000");
