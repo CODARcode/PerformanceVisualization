@@ -11,7 +11,7 @@ class StackedBars{
         var bb = document.querySelector('#StackedBars')
                     .getBoundingClientRect();
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
-        this.h = 400 - this.m[0] - this.m[2];
+        this.h = 1000 - this.m[0] - this.m[2];
         //chart
 
         this.chart = d3.select("#StackedBars")
@@ -95,13 +95,13 @@ class StackedBars{
                 return me.x(d.start);
             })
             .attr("y", function(d) {
-                return (d.level-thread.min_level) * 12;
+                return (d.level-thread.min_level) * 2;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(d.end) - me.x(d.start), 1);
             })
             .attr("height", function(d) {
-                return 12;// / locSets.length;
+                return 2;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);

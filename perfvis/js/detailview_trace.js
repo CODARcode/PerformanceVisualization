@@ -12,7 +12,7 @@ class TraceVis {
         this.m = [40, 50, 0, 30]; //top right bottom left (space between main and mini)
 
         this.w = parentview.w - parentview.leftMargin;
-        this.mainHeight = 2000; //has space between
+        this.mainHeight = 6000; //has space between
         this.bandWidth = (this.mainHeight-this.m[0]) / this.noThreads;
         //scales
         this.x1 = d3.scaleLinear()
