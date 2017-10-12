@@ -130,7 +130,7 @@ class Main {
     sendQuery(queryStr, callback) {
         var me = this;
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "http://localhost:8888/" + queryStr, true);
+        xmlhttp.open("GET", queryStr, true); //"http://localhost:8000/" +
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 callback(me, JSON.parse(xmlhttp.responseText), queryStr);
