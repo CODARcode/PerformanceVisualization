@@ -73,7 +73,7 @@ class Thread {
 	filter(brush){
 		var me = this;
 		var visItems = me.traces.filter(function(d) {
-			return d.start < brush.x1 && d.end > brush.x0;// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
+			return (d.start <= brush.x1 && d.start >= brush.x0)||(d.end >= brush.x0&&d.end <= brush.x1);// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
 		});
 
 		// regions in each location, no matter if it is within brush

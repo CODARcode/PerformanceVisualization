@@ -10,7 +10,7 @@ class TraceVis {
         this.noThreads = main.traces.noThreads;
         this.main = main;
         this.m = [40, 50, 0, 30]; //top right bottom left (space between main and mini)
-
+        this.detailRange = 1000;
         this.w = parentview.w - parentview.leftMargin;
         this.mainHeight = 6000; //has space between
         this.bandWidth = (this.mainHeight-this.m[0]) / this.noThreads;
@@ -172,7 +172,7 @@ class TraceVis {
             })
             .attr("stroke","white")
             .attr("stroke-width", function(){
-                if((brush.x1 - brush.x0)<3000){
+                if((brush.x1 - brush.x0)<me.detailRange){
                     return "3px"
                 }else{
                     return "0px"
@@ -193,7 +193,7 @@ class TraceVis {
             })
             .attr("stroke","black")
             .attr("stroke-width", function(){
-                if((brush.x1 - brush.x0)<3000){
+                if((brush.x1 - brush.x0)<me.detailRange){
                     return "2px"
                 }else{
                     return "1px"
@@ -248,7 +248,7 @@ class TraceVis {
             })
             .attr("stroke","black")
             .attr("stroke-width",function(){
-                if((brush.x1 - brush.x0)<3000){
+                if((brush.x1 - brush.x0)<me.detailRange){
                     return "0.5px";
                 }else{
                     return 0;
