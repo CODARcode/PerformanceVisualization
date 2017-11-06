@@ -10,26 +10,30 @@ class Main {
 
     initData(me, obj, queryStr){
         //set overview data
-        var traceArray = obj[0]["traces"];
-        var messageArray = obj[0]["messages"];
-        var nodeNum = traceArray.length;
-        var timeMax = 0;
+        var traceArray = [];
+        var messageArray = [];
+        var nodeNum = 69;
+        var timeMax = 4000000;
+        var timeUnit = 1000;
 
-        traceArray.forEach(function(node){
-            node.forEach(function(d){
-                var time = parseInt(d["_id"]["max"]);
-                if(time>timeMax){
-                    timeMax = time;
-                }
-            });
+        for(var i = 0; i<nodeNum; i++){
+            traceArray.push([]);
+        }
+        obj.forEach(function(d){
+            if(d["node"]==-1){
+                messageArray = d["data"];
+            }else{
+                traceArray[d["node"]] = d["data"];
+            }
         });
+
         me.traces = new Data(nodeNum, timeMax);
         me.c20 = d3.scaleOrdinal(d3.schemeCategory20).domain(me.traces.regions);
         me.timerType = 0;
         me.measure = "Calls";
 
 
-        me.overview = new Overview(me, traceArray, messageArray, timeMax);
+        me.overview = new Overview(me, traceArray, messageArray, timeMax, timeUnit);
         me.detailview = new Detailview(me);
         me.profilevis = new ProfileVis(me);
         me.statisticsvis = new StatisticsVis(me);

@@ -1,6 +1,6 @@
 // the histogram for the messages
 class Histogram {
-	constructor(main, parentview, messageArray, timeMax){
+	constructor(main, parentview, messageArray, timeMax, timeUnit){
 
         var thisWidth = parentview.w - parentview.leftMargin;
 		var me = this;
@@ -32,7 +32,20 @@ class Histogram {
             .attr("class", "y axis")
             .call(this.axis);
 
-        this.messageArray = messageArray;
+        this.binNum = 800;
+        this.binUnit = timeMax/binNum;
+        this.messages = [];
+
+        for(var i = 0; i<this.binNum; i++){
+            this.messages.push(0);
+        }
+        for(var i = 0; i < messageArray.length; i++){
+            if(i*timeUnit>=timeMax){
+                break;
+            }else{
+                this.messages[i*timeUnit/this.binUnit] += messageArray[i];
+            }
+        }
 	}
 
 	init(){
@@ -40,9 +53,9 @@ class Histogram {
 		var me = this;
         var maxHeight = 0;
 
-        this.messageArray.forEach(function(d){
-            if(maxHeight < d["count"]/(d["_id"]["max"] - d["_id"]["min"])){
-                maxHeight = d["count"]/(d["_id"]["max"] - d["_id"]["min"]);
+        this.messages.forEach(function(d){
+            if(maxHeight < d){
+                maxHeight = d);
             }
         });
         me.y.domain([0,maxHeight]);
@@ -52,22 +65,20 @@ class Histogram {
 		var rects = me.g.selectAll("rect").data(me.messageArray);
 
         rects.enter().append("rect")
-            .attr("x", function(d) {
-                return me.x(d["_id"]["min"]);
+            .attr("x", function(d,i) {
+                return me.x(i*me.binUnit);
             })
             .attr("y", function(d) {
-                return me.y(d["count"]/(d["_id"]["max"] - d["_id"]["min"]));
+                return me.canvasHeight - me.y(d);
             })
-            .attr("width", function(d) {
-                return me.x((d["_id"]["max"] - d["_id"]["min"]));
-            })
+            .attr("width", me.x(me.binUnit))
             .attr("height", function(d) {
-                return me.canvasHeight - me.y(d["count"]/(d["_id"]["max"] - d["_id"]["min"]));// / locSets.length;
+                return me.y(d);// / locSets.length;
             })
             .attr("fill", "gray")
             .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
-                return d["count"];// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+                return d;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
 
         rects.exit().remove();

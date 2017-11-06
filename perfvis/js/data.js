@@ -3,12 +3,10 @@
 class Data {
 	constructor(noThreads, timeMax){
 		var me = this;
-		this.regions = ["TAU_USER", "TAU_DEFAULT", "TAU_CALLPATH",
-                "MPI","Others"];
+		this.regions = ["Others", "", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
-		this.timeStamps = {min:0,max:timeMax,start:0, end:1};;
-		//this.timeStamps = {min:2640000,max:2760000,start:2640000, end:2760000};
+		this.timeStamps = {min:0,max:timeMax,start:0, end:1};
 		this.nodeList = [];
 
 		this.threads = [];

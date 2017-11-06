@@ -12,10 +12,10 @@ http.createServer(function(request, response) {
     //console.log(uri);
 
     if (uri.substring(0, 10) == "/overview/"){
-        query("overview",{},response);
+        query("summary",{},response);
     }else if (uri.substring(0, 10) == "/messages/"){
         var timestamps = uri.substring(10).split(":");
-        query("trace_events",{$and:[{$or:[{"event-type":"send"},{"event-type":"counter"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
+        query("trace_events",{$and:[{$or:[{"event-type":"send"},{"event-type":"receive"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 8) == "/events/"){
         var timestamps = uri.substring(8).split(":");
         query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);

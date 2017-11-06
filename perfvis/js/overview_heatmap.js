@@ -1,11 +1,13 @@
 // The overview of the traces. It use opacity to show the number of events in a time range.
 class HeatMap{
-	constructor(main, overview, ypos, traceArray, timeEnd){
+	constructor(main, overview, ypos, traceArray, timeEnd, timeUnit){
         var stageWidth = overview.w - overview.leftMargin;
 		var me = this;
         this.leftMargin = overview.leftMargin;
         this.noThreads = traceArray.length;//
         this.main = main;
+        this.binNum = 800;
+
         this.traceArray = traceArray;
 
         this.bandWidth = (overview.h-ypos)/this.noThreads - 1;

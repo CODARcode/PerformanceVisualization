@@ -1,6 +1,6 @@
 //the overview in the top for time selection and zooming in.
 class Overview{
-	constructor(main, traceArray,messageArray, timeMax){
+	constructor(main, traceArray,messageArray, timeMax, timeUnit){
         var me = this;
         this.main = main;
         this.leftMargin = 20;
@@ -16,8 +16,8 @@ class Overview{
             .attr("width", this.w + this.m[1] + this.m[3])
             .attr("height", this.h + this.m[0] + this.m[2])
             .attr("class", "chart");
-        this.histo = new Histogram(main, me, messageArray, timeMax);
-        this.heatmap = new HeatMap(main, me, 60, traceArray, timeMax);
+        this.histo = new Histogram(main, me, messageArray, timeMax, timeUnit);
+        this.heatmap = new HeatMap(main, me, 60, traceArray, timeMax, timeUnit);
         this.heatmap.init();
         this.histo.init();
     }
