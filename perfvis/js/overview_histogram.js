@@ -55,7 +55,7 @@ class Histogram {
 
         this.messages.forEach(function(d){
             if(maxHeight < d){
-                maxHeight = d);
+                maxHeight = d;
             }
         });
         me.y.domain([0,maxHeight]);

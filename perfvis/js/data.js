@@ -56,7 +56,7 @@ class Data {
 		    	me.threads[threadId].traces.push({
 		        	"start": startTime,
 		        	"end": event.time,
-		        	"region": event.name,
+		        	"region": event["group-id"],
 		        	"level": level[threadId]
 		    	});
 		    	level[threadId]--;
@@ -74,7 +74,7 @@ class Data {
 			me.threads[threadId].traces.push({
 		        "start": event.time,
 		        "end": me.timeStamps.max,
-		        "region": event.name,
+		        "region": event["group-id"],
 		        "level": level[threadId]
 		    });
 		    level[threadId]--;

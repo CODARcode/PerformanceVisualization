@@ -8,7 +8,24 @@ class HeatMap{
         this.main = main;
         this.binNum = 800;
 
-        this.traceArray = traceArray;
+        this.binNum = 800;
+        this.binUnit = timeMax/binNum;
+        this.traces = [];
+        for(var i = 0; i < this.noThreads; i++){
+            this.traces.push([]);
+            for(var j = 0;j<this.binNum;j++){
+                this.traces[i].push(0);
+            }
+            for(var j = 0; j < traceArray[i][0].length; j++){
+                if(j*timeUnit>=timeMax){
+                    break;
+                }else{
+                    for(var k = 0; k<traceArray[i].length;k++){
+                        this.traces[i][j*timeUnit/this.binUnit] += traceArray[i][k][j];
+                    }
+                }
+            }
+        }
 
         this.bandWidth = (overview.h-ypos)/this.noThreads - 1;
         this.miniHeight = this.noThreads * this.bandWidth + 20; // 20 is for the height of axis
@@ -38,13 +55,20 @@ class HeatMap{
 	}
     init(){
         var me = this;
-        this.traceArray.forEach(function(d,i){
+        this.traces.forEach(function(d,i){
             me.initNode(d,i);
         });
     }
 
     initNode(data, id) {
         var me = this;
+
+        var maxOpacity = 0;
+        this.traces.forEach(function(d){
+            if(maxOpacity < d){
+                maxOpacity = d;
+            }
+        });
         this.mini.append("text")
             .attr("x",-me.leftMargin)
             .attr("y",me.y2(id))
@@ -59,16 +83,16 @@ class HeatMap{
         this.mini.append("g").selectAll("miniItems")
             .data(data)
             .enter().append("rect")
-            .attr("x", function(d) {
-                return me.x(d["_id"]["min"]);
+            .attr("x", function(d,i) {
+                return me.x(i*me.binUnit);
             })
             .attr("y", me.y2(id))
             .attr("fill", "gray")
             .attr("fill-opacity", function(d){
-                return 10*d["count"]/(d["_id"]["max"] - d["_id"]["min"]);
+                return 1.0*d/maxOpacity;
             })
             .attr("width", function(d) {
-                return Math.max(me.x(d["_id"]["max"] - d["_id"]["min"]), 1);
+                return Math.max(me.x(me.binUnit), 1);
             })
             .attr("height", me.bandWidth);
 

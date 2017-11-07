@@ -59,9 +59,9 @@ class Main {
             return d+"\u03BCs";
         }
     }
-    getColor(name){
+    getColor(gid){
         var me = this;
-        var key = states[name];
+        var key = me.traces.regions[gid];
         if(!key){
             key = "Others";
         }
