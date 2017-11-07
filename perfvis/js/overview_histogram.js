@@ -33,7 +33,7 @@ class Histogram {
             .call(this.axis);
 
         this.binNum = 800;
-        this.binUnit = timeMax/binNum;
+        this.binUnit = timeMax/this.binNum;
         this.messages = [];
 
         for(var i = 0; i<this.binNum; i++){
@@ -62,7 +62,7 @@ class Histogram {
         me.axissvg.call(me.axis);
 
 		me.g.selectAll("rect").remove();
-		var rects = me.g.selectAll("rect").data(me.messageArray);
+		var rects = me.g.selectAll("rect").data(me.messages);
 
         rects.enter().append("rect")
             .attr("x", function(d,i) {

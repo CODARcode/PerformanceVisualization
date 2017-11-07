@@ -9,7 +9,7 @@ class HeatMap{
         this.binNum = 800;
 
         this.binNum = 800;
-        this.binUnit = timeMax/binNum;
+        this.binUnit = timeEnd/this.binNum;
         this.traces = [];
         for(var i = 0; i < this.noThreads; i++){
             this.traces.push([]);
@@ -17,7 +17,7 @@ class HeatMap{
                 this.traces[i].push(0);
             }
             for(var j = 0; j < traceArray[i][0].length; j++){
-                if(j*timeUnit>=timeMax){
+                if(j*timeUnit>=timeEnd){
                     break;
                 }else{
                     for(var k = 0; k<traceArray[i].length;k++){
@@ -27,6 +27,14 @@ class HeatMap{
             }
         }
 
+        this.maxOpacity = 0;
+        this.traces.forEach(function(data){
+            data.forEach(function(d){
+                if(me.maxOpacity < d){
+                    me.maxOpacity = d;
+                }
+            });
+        });
         this.bandWidth = (overview.h-ypos)/this.noThreads - 1;
         this.miniHeight = this.noThreads * this.bandWidth + 20; // 20 is for the height of axis
         //scales
@@ -62,13 +70,6 @@ class HeatMap{
 
     initNode(data, id) {
         var me = this;
-
-        var maxOpacity = 0;
-        this.traces.forEach(function(d){
-            if(maxOpacity < d){
-                maxOpacity = d;
-            }
-        });
         this.mini.append("text")
             .attr("x",-me.leftMargin)
             .attr("y",me.y2(id))
@@ -89,7 +90,7 @@ class HeatMap{
             .attr("y", me.y2(id))
             .attr("fill", "gray")
             .attr("fill-opacity", function(d){
-                return 1.0*d/maxOpacity;
+                return 1*d/me.maxOpacity;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(me.binUnit), 1);
