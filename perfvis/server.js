@@ -66,7 +66,7 @@ http.createServer(function(request, response) {
 function query(dbName, queryObj, response){
     MongoClient.connect(dburl, function(err, db) {
         if (err) throw err;
-        db.collection(dbName).find(queryObj).toArray(function(err, result) {
+        db.collection(dbName).find(queryObj).sort( { "time": 1 } ).toArray(function(err, result) {
             if (err) throw err;
             response.writeHead(200, {
                 "Content-Type": "text/json"

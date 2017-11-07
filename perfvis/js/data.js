@@ -49,13 +49,16 @@ class Data {
 			}
 			if(event["event-type"] == "exit"){
 				var startTime = me.timeStamps.min;
-				if(stack.length >= 1&&stack[stack.length - 1].name == event.name){
+				if(stack.length >= 1){
 					startTime = stack[stack.length - 1].time;
-					stack.pop();
+					if(stack[stack.length - 1].name == event.name){
+						stack.pop();
+					}
 				}
 		    	me.threads[threadId].traces.push({
 		        	"start": startTime,
 		        	"end": event.time,
+		        	"name": event["name"],
 		        	"region": event["group-id"],
 		        	"level": level[threadId]
 		    	});
@@ -74,6 +77,7 @@ class Data {
 			me.threads[threadId].traces.push({
 		        "start": event.time,
 		        "end": me.timeStamps.max,
+		        "name": event["name"],
 		        "region": event["group-id"],
 		        "level": level[threadId]
 		    });

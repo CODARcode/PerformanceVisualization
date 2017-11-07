@@ -71,7 +71,6 @@ class TraceVis {
             .attr("class", "fort");
     }
     update(brush){
-        console.log(brush);
 		var me = this;
         // set scales
         me.x1.domain([brush.x0, brush.x1]);
@@ -140,19 +139,21 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("cy", function(d) {
-                return me.y1(d.source);
+                return me.y1(d.source)+me.bandWidth/2;
             })
             .attr("r", 2)
-            .attr("fill","black");
+            .attr("fill","gray")
+            .attr("opacity",0.5);
         messagecsvg.enter().append("circle") //only re-enter updated rect!!!
             .attr("cx", function(d) {
                 return me.x1(d.end);
             })
             .attr("cy", function(d) {
-                return me.y1(d.destination);
+                return me.y1(d.destination)+me.bandWidth/2;
             })
             .attr("r", 2)
-            .attr("fill","black");
+            .attr("fill","gray")
+            .attr("opacity",0.5);
 
         messagecsvg.exit().remove();
 
@@ -163,15 +164,16 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source);
+                return me.y1(d.source)+me.bandWidth/2;
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination);
+                return me.y1(d.destination)+me.bandWidth/2;
             })
             .attr("stroke","white")
+            .attr("stroke-opacity",0.5)
             .attr("stroke-width", function(){
                 if((brush.x1 - brush.x0)<me.detailRange){
                     return "3px"
@@ -184,15 +186,16 @@ class TraceVis {
                 return me.x1(d.start);
             })
             .attr("y1", function(d) {
-                return me.y1(d.source);
+                return me.y1(d.source)+me.bandWidth/2;
             })
             .attr("x2", function(d) {
                 return me.x1(d.end);
             })
             .attr("y2", function(d) {
-                return me.y1(d.destination);
+                return me.y1(d.destination)+me.bandWidth/2;
             })
-            .attr("stroke","black")
+            .attr("stroke","gray")
+            .attr("stroke-opacity",0.5)
             .attr("stroke-width", function(){
                 if((brush.x1 - brush.x0)<me.detailRange){
                     return "2px"
@@ -249,13 +252,18 @@ class TraceVis {
         var me = this;
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-
+        //console.log(thread.max_level);
+        //console.log(thread.min_level);
+        //console.log(thread.location);
 
         rects.enter().append("rect") //only re-enter updated rect!!!
             .attr("class", function(d) {
                 return "mainItem" + d.location;
             })
             .attr("x", function(d) {
+                if(me.x1(d.start)==0&&(me.bandWidth-4) * (thread.max_level+1 - d.level)/(thread.max_level+1 - thread.min_level)<4){
+                    console.log(d);   
+                }
                 return me.x1(d.start);
             })
             .attr("y", function(d) {
@@ -268,23 +276,23 @@ class TraceVis {
             })
             .attr("height", function(d) {
                 var thisHeight = (me.bandWidth-4) * (thread.max_level+1 - d.level)/(thread.max_level+1 - thread.min_level);
-                if(thisHeight<1) thisHeight = 1;
+                if(thisHeight<1){
+                    thisHeight = 1;
+                }
                 return thisHeight;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);
             })
-            .attr("stroke","black")
-            .attr("stroke-width", "0.5px")
-            .attr("opacity", function(d){
-                return (d.region.length+110)/(120+d.region.length);
-            })
+            .attr("stroke","gray")
+            .attr("stroke-opacity", 0.5)
+            .attr("stroke-width", "0.1px")
             .on("mouseover", function(d) {
                 me.mouseOverPos = d;
             })
             .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
-                return d.region;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+                return d.name;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
 
         rects.exit().remove();

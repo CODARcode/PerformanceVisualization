@@ -106,13 +106,10 @@ class Main {
     update(extent, detail) {
         var me = this;
 
-        console.log(extent);
         this.detailview.update(extent);
-        console.log(extent);
         this.profilevis.update(extent);
         this.statisticsvis.update(extent);
 
-        console.log(detail);
         this.traces.threads.forEach(function(thread,i) {
             thread.clear();
             if(me.traces.nodeList.indexOf(i)!=-1){
