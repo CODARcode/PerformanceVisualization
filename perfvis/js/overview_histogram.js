@@ -103,7 +103,7 @@ class Histogram {
             if (s != null) {
                 me.main.traces.timeStamps.min = me.x.invert(s[0]);
                 me.main.traces.timeStamps.max = me.x.invert(s[1]);
-                me.main.set();
+                me.main.updateBrush({x0:0,x1:0,nodes:[]});
             }
         }
     }

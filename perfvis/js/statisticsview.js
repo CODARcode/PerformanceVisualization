@@ -74,6 +74,9 @@ class StatisticsVis{
 		var me = this;
 		var locSets = thread.locSets;
 		var locMaps = thread.locMaps;
+        //console.log(locSets)
+        //console.log(locMaps)
+        
         //------- plot bars -----------
         var bars = thread.barRect.selectAll("rect")
             .data(locSets);
@@ -96,7 +99,7 @@ class StatisticsVis{
                 me.mouseOverPos = d;
             }).append("title")
             .text(function(d) {
-                var spstr = d.split("=>").slice(-1)[0];
+                var spstr = me.main.traces.regions[d];
                 return spstr + ": " + locMaps.get(d);
             });
 
@@ -113,7 +116,7 @@ class StatisticsVis{
                 var skip = (8>sh)?Math.ceil(8/sh):0;
 
                 if(skip==0||i%skip==0){
-                    var spstr = d.split("=>").slice(-1)[0];
+                    var spstr = me.main.traces.regions[d];
                     return spstr;
                 }else{
                     return "";

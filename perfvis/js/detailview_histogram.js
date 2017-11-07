@@ -112,7 +112,7 @@ class MessageVis {
         function brushmoved() {
             var s = d3.event.selection;
             if (s != null) {
-                me.main.update({x0:me.x.invert(s[0]),x1:me.x.invert(s[1]),nodes:[]});
+                me.main.updateBrush({x0:me.x.invert(s[0]),x1:me.x.invert(s[1]),nodes:[]});
             }
         }
     }

@@ -20,8 +20,6 @@ class ProfileVis {
             .domain([0, 1])
             .range([0, this.w]); //main
 
-        var arr = [0, 1, 2, 3];
-
         this.y = d3.scaleLinear()
             .domain([0, this.noThreads])
             .range([this.m[4], this.h]); //main
@@ -62,6 +60,7 @@ class ProfileVis {
     }
 
     updateThread(thread) {
+        //console.log(thread.location);
 		var me = this;
 		var barheight = me.h/me.noThreads-3;
 
@@ -74,15 +73,13 @@ class ProfileVis {
             .data(function(d){return d;})
             .enter()
             .append("rect")
-            .attr("x", function(d) {
-                return me.x(d.y0);
-            })
+            .attr("x",function(d) {return me.x(d[0]); })
             .attr("y", function(d) {
-                return me.y(d.x-1);
+                return me.y(thread.location);
             })
             .attr("height", barheight)
             .attr("width", function(d) {
-                return me.x(d.y0 + d.y) - me.x(d.y0);
+                return Math.max(me.x(d[1] - d[0]),0.1);
             })
             .on("mouseover", function() {
                 thread.tooltip.style("display", null);
@@ -94,7 +91,7 @@ class ProfileVis {
                 var xPosition = d3.mouse(this)[0] - 15;
                 var yPosition = d3.mouse(this)[1] - 25;
                 thread.tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-                thread.tooltip.select("text").text(d.name + ":" + d.y);
+                thread.tooltip.select("text").text(d.key + ":" + (d[1]-d[0]));
             });
 
 
@@ -125,47 +122,21 @@ class ProfileVis {
             profiles = thread.counterProfiles[index];
         }
         var sum = 0;
-
-        Object.keys(profiles).forEach(function(d) {
+        var obj = {};
+        Object.keys(profiles).forEach(function(d){
             sum += profiles[d][me.measure];
-        })
-
-        var count = [];
-        regions.forEach(function(d, i) {
-            count[i] = 0;
-        })
-
-        thread.stacks = d3.stack()(Object.keys(profiles).map(function(d,i) {
-            var arr = d.split("=>");
-            var region = arr[arr.length - 1];
-            var index = regions.indexOf(region);
-            count[index]++;
-            return [{
-                name: region,
-                path: d,
-                index: index,
-                count: count[index],
-                x: thread.location,
-                y: +(profiles[d][me.measure]),
-                colorIndex: i
-            }];
-        }));
-        //console.log(me.measure);
-        //console.log(thread.stacks);
+            obj[d] = profiles[d][me.measure];
+        });
+        obj['total'] = sum;
+        //console.log(obj);
         this.svg.selectAll("g.thread" + thread.location).remove();
-
-        //var color = d3.scale.category20c();
-
+        var data = [obj];
         thread.groups = this.svg.selectAll("g.thread" + thread.location)
-            .data(thread.stacks)
+            .data(d3.stack().keys(Object.keys(profiles))(data))
             .enter().append("g")
             .attr("class", "thread" + thread.location)
-            .style("fill", function(d) {
-                return me.main.getTwoColor(d[0].colorIndex);//(d[0].path);
-                //return color(d[0].path);
-            })
-            .style("opacity", function(d) {
-                return 1.0 * d[0].count / count[d[0].index];
+            .style("fill", function(d,i) {
+                return me.main.getTwoColor(i);
             });
         // Prep the tooltip bits, initial display is hidden
         thread.tooltip = this.svg.append("g")

@@ -1,9 +1,9 @@
 //The data is stored here. Including traces, messages, and profiles.
 //The traces and profiles are stored in their threads(nodes).
 class Data {
-	constructor(noThreads, timeMax){
+	constructor(noThreads, traceSummary, timeMax, timeUnit){
 		var me = this;
-		this.regions = ["Others", "", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
+		this.regions = ["Others", "TAU_CALLPATH", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
 		this.timeStamps = {min:0,max:timeMax,start:0, end:1};
@@ -11,7 +11,7 @@ class Data {
 
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
-		    me.threads.push(new Thread(i));
+		    me.threads.push(new Thread(i, traceSummary[i], timeMax/timeUnit, timeUnit));
 		    this.nodeList.push(i);
 		}
 		this.messages = [];
@@ -94,7 +94,7 @@ class Data {
 
 	setMessages(messages){
 		this.messages = messages;
-		console.log(messages);
+		//console.log(messages);
 	}
 
 	setProfiles(profiles, timerType){

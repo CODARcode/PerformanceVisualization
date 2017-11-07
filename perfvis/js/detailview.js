@@ -27,6 +27,7 @@ class Detailview{
 	}
 
 	update(brush){
+        console.log(brush);
         var me = this;
         this.tracevis.update(brush);
         this.histo.update(brush);

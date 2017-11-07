@@ -15,6 +15,7 @@ class Main {
         var nodeNum = 69;
         var timeMax = 4000000;
         var timeUnit = 1000;
+        me.timeUnit = timeUnit;
 
         for(var i = 0; i<nodeNum; i++){
             traceArray.push([]);
@@ -27,7 +28,7 @@ class Main {
             }
         });
 
-        me.traces = new Data(nodeNum, timeMax);
+        me.traces = new Data(nodeNum, traceArray, timeMax, timeUnit);
         me.c20 = d3.scaleOrdinal(d3.schemeCategory20).domain(me.traces.regions);
         me.timerType = 0;
         me.measure = "Calls";
@@ -40,14 +41,14 @@ class Main {
         me.stackedBars = new StackedBars(me);
         me.treemaps = new Treemapview(me);
         me.legend = new Legend(me);
-
+        me.profileNum = 6;
         me.sendQuery("profiles/0", me.getProfiles);//timers of the profiles.
         me.sendQuery("profiles/1", me.getProfiles);//counters of the profiles.        
         me.sendQuery("profiles/2", me.getProfiles);//timers of the profiles.
         me.sendQuery("profiles/3", me.getProfiles);//counters of the profiles.        
         me.sendQuery("profiles/4", me.getProfiles);//timers of the profiles.
         me.sendQuery("profiles/5", me.getProfiles);//counters of the profiles.
-        me.initProfiles();
+        
     }
 
     tickByTime(d){
@@ -81,33 +82,42 @@ class Main {
         return me.c20(region);
     }
 
-    set(){
+    updateBrush(extent){
         var me = this;
-        me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
-        me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
-    }
-
-    update(extent) {
-        var me = this;
-        var fake = false;
-        if (extent.x0 == extent.x1) {
-            extent.x0 = this.traces.timeStamps.min;
-            extent.x1 = this.traces.timeStamps.max;
-            fake = true;
-        }
+        var needQuery = false;
         if(extent.nodes.length==0){
             extent.nodes = me.traces.nodeList;//all
         }
+        if (extent.x0 == extent.x1) {
+            extent.x0 = this.traces.timeStamps.min;
+            extent.x1 = this.traces.timeStamps.max;
+        }else if(extent.x1 - extent.x0 < me.timeUnit){
+            needQuery = true;
+        }
 
+        if(needQuery){
+            me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
+            me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
+        }else{
+            me.update(extent, false);
+        }
+    }
+
+    update(extent, detail) {
+        var me = this;
+
+        console.log(extent);
         this.detailview.update(extent);
+        console.log(extent);
         this.profilevis.update(extent);
         this.statisticsvis.update(extent);
 
+        console.log(detail);
         this.traces.threads.forEach(function(thread,i) {
             thread.clear();
             if(me.traces.nodeList.indexOf(i)!=-1){
                 thread.filter(extent);
-                me.detailview.tracevis.updateThread(thread, extent);
+                me.detailview.tracevis.updateThread(thread, extent, detail);
                 me.profilevis.updateThread(thread);
                 me.statisticsvis.updateThread(thread);
             }
@@ -144,7 +154,7 @@ class Main {
     }
     getEvents(me, obj, queryStr) {
         me.traces.setTraces(obj);
-        me.update({x0:0,x1:0,nodes:[]})
+        me.update({x0:me.traces.timeStamps.min,x1:me.traces.timeStamps.max,nodes:me.traces.nodeList}, true)
     }
 
     getMessages(me, obj, queryStr){
@@ -153,6 +163,10 @@ class Main {
 
     getProfiles(me, obj, queryStr) {
         me.traces.setProfiles(obj, queryStr.substring(9));
+        me.profileNum--;
+        if(me.profileNum == 0){
+            me.initProfiles();
+        }
     }
 
     setMeasure(measure, timerType){

@@ -71,6 +71,7 @@ class TraceVis {
             .attr("class", "fort");
     }
     update(brush){
+        console.log(brush);
 		var me = this;
         // set scales
         me.x1.domain([brush.x0, brush.x1]);
@@ -81,6 +82,7 @@ class TraceVis {
             ranges.push(me.m[0]+i*me.bandWidth);
         }
         me.y1.domain(brush.nodes).range(ranges);
+
         me.updateMessages(brush);
     }
 
@@ -156,7 +158,6 @@ class TraceVis {
 
         var messagesvg = this.messageLines.selectAll("line")
             .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-            console.log(linkMessages);
         messagesvg.enter().append("line") //only re-enter updated rect!!!
             .attr("x1", function(d) {
                 return me.x1(d.start);
@@ -202,26 +203,53 @@ class TraceVis {
         messagesvg.exit().remove();
     }
 
-    updateThread(thread, brush) {
-		var me = this;
-		var locSets = thread.locSets;
+    updateSummary(thread){
+        var me = this;
+        var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
+            .data(thread.summary); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged            
 
-        var idLebals = thread.idLabel.selectAll("text").data([0]);
-        idLebals.enter().append("text")
-            .text(thread.location)
-            .attr("x",-20)
-            .attr("y", function(){
-                return me.y1(thread.location)+me.bandWidth/2;
+        var timeUnit = me.main.timeUnit;
+        rects.enter().append("rect") //only re-enter updated rect!!!
+            .attr("class", function(d) {
+                return "mainItem" + d.location;
             })
-            .attr("font-size", "12px")
-            .attr("font-family", "sans-serif")
-            .on('click', function(d){
-                me.main.stackedBars.setIndex(thread.location);
+            .attr("x", function(d) {
+                return me.x1(d.time);
+            })
+            .attr("y", function(d) {
+                return me.y1(thread.location) + me.bandWidth*(d.start)/thread.maxLen;
+            })
+            .attr("width", function(d) {
+                return me.x1(d.time+timeUnit) - me.x1(d.time);
+            })
+            .attr("height", function(d) {
+                var thisHeight = me.bandWidth*(d.end-d.start)/thread.maxLen;
+                if(thisHeight<1) thisHeight = 1;
+                return thisHeight;
+            })
+            .attr("fill", function(d) {
+                return me.main.getColor(d.region);
+            })
+            .attr("stroke","black")
+            .attr("stroke-width", 0)
+            .attr("opacity", function(d){
+                return (d.region.length+110)/(120+d.region.length);
+            })
+            .on("mouseover", function(d) {
+                me.mouseOverPos = d;
+            })
+            .append("title") //asynch mode may generate different brush extents
+            .text(function(d) {
+                return me.main.traces[d.region];// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
 
+        rects.exit().remove();
+    }
+    updateDetails(thread){
+        var me = this;
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
-            
+
 
         rects.enter().append("rect") //only re-enter updated rect!!!
             .attr("class", function(d) {
@@ -247,13 +275,7 @@ class TraceVis {
                 return me.main.getColor(d.region);
             })
             .attr("stroke","black")
-            .attr("stroke-width",function(){
-                if((brush.x1 - brush.x0)<me.detailRange){
-                    return "0.5px";
-                }else{
-                    return 0;
-                }
-            })
+            .attr("stroke-width", "0.5px")
             .attr("opacity", function(d){
                 return (d.region.length+110)/(120+d.region.length);
             })
@@ -266,6 +288,28 @@ class TraceVis {
             });
 
         rects.exit().remove();
+    }
+
+    updateThread(thread, brush, detail) {
+		var me = this;
+		var locSets = thread.locSets;
+        var idLebals = thread.idLabel.selectAll("text").data([0]);
+        idLebals.enter().append("text")
+            .text(thread.location)
+            .attr("x",-20)
+            .attr("y", function(){
+                return me.y1(thread.location)+me.bandWidth/2;
+            })
+            .attr("font-size", "12px")
+            .attr("font-family", "sans-serif")
+            .on('click', function(d){
+                me.main.stackedBars.setIndex(thread.location);
+            });
+        if(detail){
+            me.updateDetails(thread);
+        }else{
+            me.updateSummary(thread);
+        }
 
         //update main lane text
         // clean up previous plotting

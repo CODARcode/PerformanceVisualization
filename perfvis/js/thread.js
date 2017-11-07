@@ -1,6 +1,6 @@
 //The thread of the trace_events, in the sample datasets it is used as a node in a thread.
 class Thread {
-    constructor(lid, profiles) {
+    constructor(lid, traceSummary, len, timeUnit) {
     	//data
     	var me = this;
         this.location = lid;
@@ -9,8 +9,27 @@ class Thread {
         this.counter = [[],[],[]];
         this.timerProfiles = [{},{},{}];
         this.counterProfiles = [{},{},{}];
+        this.timeUnit = timeUnit;
 
         this.traces = [];
+        this.traceSummary = [];
+        this.maxLen = 0;
+        for(var i = 0; i<len; i++){
+        	var acc = 0;
+        	for(var j = 0; j<traceSummary.length; j++){
+        		if(traceSummary[j][i]>0){
+        			var obj = {};
+        			obj["start"] = acc;
+        			acc+=traceSummary[j][i];
+        			obj["end"] = acc;
+        			this.maxLen = Math.max(this.maxLen,acc);
+        			obj["region"] = j;
+        			obj["time"] = i*timeUnit;
+        			this.traceSummary.push(obj);
+        		}
+        	}
+        }
+        this.summary = [];
 
         //traces vis
         this.main_lane_text = {};
@@ -72,6 +91,9 @@ class Thread {
 	
 	filter(brush){
 		var me = this;
+		var summary = me.traceSummary.filter(function(d){
+			return (d.time <= brush.x1 && d.time >= brush.x0)||(d.time+me.timeUnit >= brush.x0&&d.time+me.timeUnit <= brush.x1);
+		});
 		var visItems = me.traces.filter(function(d) {
 			return (d.start <= brush.x1 && d.start >= brush.x0)||(d.end >= brush.x0&&d.end <= brush.x1);// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
 		});
@@ -124,6 +146,7 @@ class Thread {
 		this.visItems = visItems;
 		this.locSets = locSets;
 		this.locMaps = locMaps;
+		this.summary = summary;
 	}
 	
     print() {
