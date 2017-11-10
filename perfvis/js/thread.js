@@ -1,20 +1,22 @@
 //The thread of the trace_events, in the sample datasets it is used as a node in a thread.
 class Thread {
-    constructor(lid, traceSummary, len, timeUnit) {
+    constructor(lid, traceSummary, data) {
     	//data
     	var me = this;
         this.location = lid;
+        this.data = data;
 
         this.timer = [[],[],[]];
         this.counter = [[],[],[]];
         this.timerProfiles = [{},{},{}];
         this.counterProfiles = [{},{},{}];
-        this.timeUnit = timeUnit;
+        this.timeUnit = data.timeUnit;
+        this.maxUnitNum = data.timeStamps.max/this.timeUnit;
 
         this.traces = [];
         this.traceSummary = [];
         this.maxLen = 0;
-        for(var i = 0; i<len; i++){
+        for(var i = 0; i<data.timeStamps.max/this.timeUnit; i++){
         	var acc = 0;
         	for(var j = 0; j<traceSummary.length; j++){
         		if(traceSummary[j][i]>0){
@@ -24,7 +26,7 @@ class Thread {
         			obj["end"] = acc;
         			this.maxLen = Math.max(this.maxLen,acc);
         			obj["region"] = j;
-        			obj["time"] = i*timeUnit;
+        			obj["time"] = i*this.timeUnit;
         			this.traceSummary.push(obj);
         		}
         	}
@@ -89,13 +91,15 @@ class Thread {
         this.tooltip.selectAll("text").remove();
 	}
 	
-	filter(brush){
+	filter(){
 		var me = this;
+		var brush = me.data.timeStamps;
 		var summary = me.traceSummary.filter(function(d){
-			return (d.time <= brush.x1 && d.time >= brush.x0)||(d.time+me.timeUnit >= brush.x0&&d.time+me.timeUnit <= brush.x1);
+			return (d.time <= brush.max && d.time >= brush.min)||(d.time+me.timeUnit >= brush.min&&d.time+me.timeUnit <= brush.max);
 		});
+
 		var visItems = me.traces.filter(function(d) {
-			return (d.start <= brush.x1 && d.start >= brush.x0)||(d.end >= brush.x0&&d.end <= brush.x1);// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
+			return (d.start <= brush.max && d.start >= brush.min)||(d.end >= brush.min&&d.end <= brush.max);// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
 		});
 
 		// regions in each location, no matter if it is within brush

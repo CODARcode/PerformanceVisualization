@@ -11,7 +11,7 @@ class StackedBars{
         var bb = document.querySelector('#StackedBars')
                     .getBoundingClientRect();
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
-        this.h = 1000 - this.m[0] - this.m[2];
+        this.h = 500 - this.m[0] - this.m[2];
         //chart
 
         this.chart = d3.select("#StackedBars")
@@ -54,24 +54,24 @@ class StackedBars{
 			thread.nodeLabel.selectAll("text").remove();
 		});
 		this.nodeIndex = index;
-		this.update(this.brush);
+		this.update();
 	}
 
-	update(brush){
+	update(){
 		var me = this;
         // set scales
-        me.x.domain([brush.x0, brush.x1]);
+        var brush = me.main.traces.timeStamps;
+        me.x.domain([brush.min, brush.max]);
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
-        me.brush = brush;
         if(me.nodeIndex!=-1){
 
-        	me.updateThread(me.main.traces.threads[me.nodeIndex],brush);	
+        	me.updateThread(me.main.traces.threads[me.nodeIndex]);	
         }
 
 	}
 
-    updateThread(thread, brush) {
+    updateThread(thread) {
 		var me = this;
 		var locSets = thread.locSets;
 
@@ -86,7 +86,7 @@ class StackedBars{
                 .attr("font-family", "sans-serif");
         var min_level = -100;
 
-
+        var brush = me.main.traces.timeStamps;
         var rects = thread.nodeRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems);//the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
 
@@ -108,7 +108,7 @@ class StackedBars{
             })
             .attr("stroke","black")
             .attr("stroke-width",function(){
-                if((brush.x1 - brush.x0)<3000){
+                if((brush.max - brush.min)<3000){
                     return "0.5px";
                 }else{
                     return 0;

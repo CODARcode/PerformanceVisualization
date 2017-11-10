@@ -26,9 +26,9 @@ class Detailview{
         this.histo.init();
 	}
 
-	update(brush){
+	update(){
         var me = this;
-        this.tracevis.update(brush);
-        this.histo.update(brush);
+        this.tracevis.update();
+        this.histo.update();
 	}
 }

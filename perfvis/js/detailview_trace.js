@@ -12,7 +12,7 @@ class TraceVis {
         this.m = [40, 50, 0, 30]; //top right bottom left (space between main and mini)
         this.detailRange = 1000;
         this.w = parentview.w - parentview.leftMargin;
-        this.mainHeight = 6000; //has space between
+        this.mainHeight = 1000; //has space between
         this.bandWidth = (this.mainHeight-this.m[0]) / this.noThreads;
         //scales
         this.x1 = d3.scaleLinear()
@@ -70,32 +70,33 @@ class TraceVis {
         this.fort = this.mainCanvas.append("g")
             .attr("class", "fort");
     }
-    update(brush){
+    update(){
 		var me = this;
         // set scales
-        me.x1.domain([brush.x0, brush.x1]);
+        me.x1.domain([me.main.traces.timeStamps.min, me.main.traces.timeStamps.max]);
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
+        me.bandWidth = (this.mainHeight-this.m[0])/me.main.traces.nodeList.length;
         var ranges = [];
-        for(var i = 0;i<brush.nodes.length;i++){
+        for(var i = 0;i<me.main.traces.nodeList.length;i++){
             ranges.push(me.m[0]+i*me.bandWidth);
         }
-        me.y1.domain(brush.nodes).range(ranges);
+        me.y1.domain(me.main.traces.nodeList).range(ranges);
 
-        me.updateMessages(brush);
-    }
-
-    updateMessages(brush) {
-        var me = this;
         this.messageLines.selectAll("line").remove();
         this.messageCircles.selectAll("circle").remove();
+    }
+
+    updateMessages() {
+        var me = this;
+        var brush = me.main.traces.timeStamps;
         // draw messagelines here
         var linkMessages = [];
 
         var myMap = new Map();
 
         me.main.traces.messages.forEach(function(d){
-            if(d.timestamp>=brush.x0&&d.timestamp<=brush.x1){
+            if(d.timestamp>=brush.min&&d.timestamp<=brush.max){
                 if(d["event-type"] == "receive"){
                     //if found, pop and push to linkMessages
                     var d0 = myMap.get(d["source-node-id"]+","+d["destination-node-id"]);
@@ -110,9 +111,9 @@ class TraceVis {
         });
         this.fort.selectAll("path").remove();
         var fortsvg = this.fort.selectAll("path")
-            .data(fort);
+            .data(me.main.traces.fort);
         fortsvg.enter().append("path") //only re-enter updated rect!!!
-            .filter(function(d) { return d.start >=brush.x0&& d.end <= brush.x1})
+            .filter(function(d) { return d.start >=brush.min&& d.end <= brush.max&&me.main.traces.nodeList.includes(d.nodestart) &&me.main.traces.nodeList.includes(d.nodeend);})
             .attr("d", function(d) {
                 var x1 = me.x1(d.end);
                 var x2 = me.x1(d.start);
@@ -142,8 +143,8 @@ class TraceVis {
                 return me.y1(d.source)+me.bandWidth/2;
             })
             .attr("r", 2)
-            .attr("fill","gray")
-            .attr("opacity",0.5);
+            .attr("fill","gray");
+
         messagecsvg.enter().append("circle") //only re-enter updated rect!!!
             .attr("cx", function(d) {
                 return me.x1(d.end);
@@ -152,8 +153,7 @@ class TraceVis {
                 return me.y1(d.destination)+me.bandWidth/2;
             })
             .attr("r", 2)
-            .attr("fill","gray")
-            .attr("opacity",0.5);
+            .attr("fill","gray");
 
         messagecsvg.exit().remove();
 
@@ -173,14 +173,7 @@ class TraceVis {
                 return me.y1(d.destination)+me.bandWidth/2;
             })
             .attr("stroke","white")
-            .attr("stroke-opacity",0.5)
-            .attr("stroke-width", function(){
-                if((brush.x1 - brush.x0)<me.detailRange){
-                    return "3px"
-                }else{
-                    return "0px"
-                }
-            });
+            .attr("stroke-width", "2px");
         messagesvg.enter().append("line") //only re-enter updated rect!!!
             .attr("x1", function(d) {
                 return me.x1(d.start);
@@ -196,13 +189,7 @@ class TraceVis {
             })
             .attr("stroke","gray")
             .attr("stroke-opacity",0.5)
-            .attr("stroke-width", function(){
-                if((brush.x1 - brush.x0)<me.detailRange){
-                    return "2px"
-                }else{
-                    return "1px"
-                }
-            });
+            .attr("stroke-width", "1px");
         messagesvg.exit().remove();
     }
 
@@ -298,7 +285,7 @@ class TraceVis {
         rects.exit().remove();
     }
 
-    updateThread(thread, brush, detail) {
+    updateThread(thread, detail) {
 		var me = this;
 		var locSets = thread.locSets;
         var idLebals = thread.idLabel.selectAll("text").data([0]);
@@ -312,6 +299,17 @@ class TraceVis {
             .attr("font-family", "sans-serif")
             .on('click', function(d){
                 me.main.stackedBars.setIndex(thread.location);
+                /*if(me.main.stackedBars.nodeIndex == thread.location){
+                    d3.select(this).attr("fill", "red");
+                }else{
+                    d3.select(this).attr("fill", "black");
+                }*/
+            })
+            .on('mouseover', function(d){
+                d3.select(this).style("cursor", "pointer"); 
+            })
+            .on('mouseout', function(d){
+                d3.select(this).style("cursor", "default"); 
             });
         if(detail){
             me.updateDetails(thread);

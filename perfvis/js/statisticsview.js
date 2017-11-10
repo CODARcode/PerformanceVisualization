@@ -56,18 +56,20 @@ class StatisticsVis{
         thread.barRect = this.metabar.append("g").attr("clip-path", "url(#clip)");
 	}
 	
-	update(brush){
+	update(){
 		var me = this;
+        var brush = me.main.traces.timeStamps;
+        var nodes = me.main.traces.nodeList;
         // set scales
         //me.y1.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
-        me.metax.domain([0, brush.x1 - brush.x0]);
+        me.metax.domain([0, brush.max - brush.min]);
         //update main x axis
         me.metaAxisSvg.call(me.metaAxis);        
         var ranges = [];
-        for(var i = 0;i<brush.nodes.length;i++){
+        for(var i = 0;i<nodes.length;i++){
             ranges.push(me.mm[0]+(i+1)*me.bandWidth);
         }
-        me.y1.domain(brush.nodes).range(ranges);
+        me.y1.domain(nodes).range(ranges);
         //me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
 	}
 	updateThread(thread){

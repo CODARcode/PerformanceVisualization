@@ -85,41 +85,45 @@ class Main {
     updateBrush(extent){
         var me = this;
         var needQuery = false;
-        if(extent.nodes.length==0){
-            extent.nodes = me.traces.nodeList;//all
+        if(extent.nodes.length!=0){
+            me.traces.nodeList = extent.nodes;
         }
-        if (extent.x0 == extent.x1) {
-            extent.x0 = this.traces.timeStamps.min;
-            extent.x1 = this.traces.timeStamps.max;
-        }else if(extent.x1 - extent.x0 < me.timeUnit){
-            needQuery = true;
+        if (extent.x0 < extent.x1) {
+            me.traces.timeStamps.min = extent.x0;
+            me.traces.timeStamps.max = extent.x1;
+            if(extent.x1 - extent.x0 < me.timeUnit){
+                needQuery = true;
+            }
         }
 
+
         if(needQuery){
+            console.log("query database");
             me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
             me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
         }else{
-            me.update(extent, false);
+            me.update(false);
         }
     }
 
-    update(extent, detail) {
+    update(detail) {
         var me = this;
-
-        this.detailview.update(extent);
-        this.profilevis.update(extent);
-        this.statisticsvis.update(extent);
-
+        this.detailview.update();
+        this.profilevis.update();
+        this.statisticsvis.update();
+        if(detail){
+            me.detailview.tracevis.updateMessages();
+        }
         this.traces.threads.forEach(function(thread,i) {
             thread.clear();
             if(me.traces.nodeList.indexOf(i)!=-1){
-                thread.filter(extent);
-                me.detailview.tracevis.updateThread(thread, extent, detail);
+                thread.filter();
+                me.detailview.tracevis.updateThread(thread, detail);
                 me.profilevis.updateThread(thread);
                 me.statisticsvis.updateThread(thread);
             }
         });
-        this.stackedBars.update(extent);
+        this.stackedBars.update();
     }
 
     initProfiles() {

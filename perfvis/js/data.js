@@ -3,15 +3,17 @@
 class Data {
 	constructor(noThreads, traceSummary, timeMax, timeUnit){
 		var me = this;
-		this.regions = ["Others", "TAU_CALLPATH", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
+		this.fort = [{"file":"trajectory-2.002000","start":2.95E+06,"end":3.80E+06,"nodestart":0,"nodeend":4},{"file":"trajectory-2.006","start":6.12998E+06,"end":6.12804E+06,"nodestart":0,"nodeend":4}];
+		this.regions = ["Others", "TAU_Others", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
 		this.timeStamps = {min:0,max:timeMax,start:0, end:1};
+		this.timeUnit = timeUnit;
 		this.nodeList = [];
 
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
-		    me.threads.push(new Thread(i, traceSummary[i], timeMax/timeUnit, timeUnit));
+		    me.threads.push(new Thread(i, traceSummary[i], me));
 		    this.nodeList.push(i);
 		}
 		this.messages = [];

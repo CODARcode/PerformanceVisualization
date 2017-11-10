@@ -48,16 +48,17 @@ class MessageVis {
 		me.draw();
 	}
 	
-	filterData(brush){
+	filterData(){
 		var me = this;
+        var brush = me.main.traces.timeStamps;
 		//console.log(brush);
         for(var i = 0;i<100;i++){
-        	this.data[i] = {time:Math.floor((brush.x1-brush.x0)*i/100)+brush.x0,amount:0};
+        	this.data[i] = {time:Math.floor((brush.max-brush.min)*i/100)+brush.min,amount:0};
         }
         this.max = 0.1;
         me.main.traces.messages.forEach(function(d){
-        	if(d.timestamp>=brush.x0&&d.timestamp<=brush.x1){
-        		var index = Math.floor(100*(d.timestamp - brush.x0)/ (brush.x1-brush.x0+0.01));
+        	if(d.timestamp>=brush.min&&d.timestamp<=brush.max){
+        		var index = Math.floor(100*(d.timestamp - brush.min)/ (brush.max-brush.min+0.01));
         		//console.log(d);
         		me.data[index].amount++;
         		if(me.data[index].amount>me.max){
@@ -117,11 +118,11 @@ class MessageVis {
         }
     }
 
-	update(brush){
+	update(){
 		//filter data
 		var me = this;
-		me.x.domain([brush.x0, brush.x1]);
-		me.filterData(brush)
+		me.x.domain([me.main.traces.timeStamps.min, me.main.traces.timeStamps.max]);
+		me.filterData()
 		me.draw();
         me.initBrush()
 	}

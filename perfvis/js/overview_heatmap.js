@@ -79,7 +79,18 @@ class HeatMap{
             .attr("alignment-baseline", "hanging")
             .on('click', function(d){
                 me.main.traces.updateSelectedNodes(id);
-                me.main.update({x0:0,x1:0,nodes:[]});
+                if(me.main.traces.nodeList.includes(id)){
+                    d3.select(this).attr("fill", "red");
+                }else{
+                    d3.select(this).attr("fill", "black");
+                }
+                me.main.update(false);
+            })
+            .on('mouseover', function(d){
+                d3.select(this).style("cursor", "pointer"); 
+            })
+            .on('mouseout', function(d){
+                d3.select(this).style("cursor", "default"); 
             });
         this.mini.append("g").selectAll("miniItems")
             .data(data)
@@ -98,21 +109,22 @@ class HeatMap{
             .attr("height", me.bandWidth);
 
         this.mini.append("g").selectAll("fort")
-            .data(fort)
+            .data(me.main.traces.fort)
             .enter().append("path") //only re-enter updated rect!!!
             //.filter(function(d) { return d.end <= me.main.traces.timeStamps.max})
             .attr("d", function(d) {
                 var x1 = me.x(d.end);
                 var x2 = me.x(d.start);
                 var y1 = me.y2(d.nodestart);
-                var y2 = me.y2(d.nodestart) + me.y2(1)-25;
-                var y3 = me.y2(d.nodeend) + me.y2(1)-25;
+                var y2 = me.y2(d.nodestart) + me.y2(1) - me.y2(0);
+                var y3 = me.y2(d.nodeend) + me.y2(1) - me.y2(0);
                 var y4 = me.y2(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
             .attr("fill","white")
-            .attr("stroke","gray")
-            .attr("opacity", 0.2)
+            //.attr("stroke","gray")
+            .attr("opacity", "0.2")
+            .attr("fill-opacity", "0.1")
             .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
                 return "filename: "+d.file;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();

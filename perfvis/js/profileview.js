@@ -14,6 +14,7 @@ class ProfileVis {
         this.h = theight - this.m[0] - this.m[2];
         this.height = this.h - this.m[4]; //has space between
 		this.measure = "Calls";
+        this.bandWidth = this.h / this.noThreads;
 
         var formatPercent = d3.format(".0%");
         this.x = d3.scaleLinear()
@@ -49,10 +50,17 @@ class ProfileVis {
         });
     }
 
-    update(brush) {
+    update() {
 		var me = this;
         //me.y.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
         //me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
+
+        var nodes = me.main.traces.nodeList;
+        var ranges = [];
+        for(var i = 0;i<nodes.length;i++){
+            ranges.push(me.m[0]+(i+1)*me.bandWidth);
+        }
+        me.y.domain(nodes).range(ranges);
     }
 
     setMeasure(measure){
