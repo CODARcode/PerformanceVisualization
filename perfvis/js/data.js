@@ -10,7 +10,10 @@ class Data {
 		this.timeStamps = {min:0,max:timeMax,start:0, end:1};
 		this.timeUnit = timeUnit;
 		this.nodeList = [];
-
+		this.selectedRegions = [];
+		for(var i = 0;i<this.regions.length;i++){
+			this.selectedRegions.push(i);
+		}
 		this.threads = [];
 		for(var i = 0;i<noThreads;i++){
 		    me.threads.push(new Thread(i, traceSummary[i], me));
@@ -36,7 +39,20 @@ class Data {
 			}
 		}
 	}
+	querySummary(){
+		this.threads.forEach(function(d){
+			d.setSummary();
+		});
+	}
 
+	setSelectedRegions(id){
+		var index = this.selectedRegions.indexOf(id);
+		if(index == -1){
+			this.selectedRegions.push(id);
+		}else{
+			this.selectedRegions.splice(index,1);
+		}
+	}
 	setTraces(traceObjs){
 		var me = this;
 		var stack = [];
@@ -46,31 +62,30 @@ class Data {
 		});
 		traceObjs.forEach(function(event){
 			var threadId = parseInt(event["node-id"]);
-			if(threadId === undefined){
-				console.log(event["node-id"]);
-			}
-			if(event["event-type"] == "exit"){
-				var startTime = me.timeStamps.min;
-				if(stack.length >= 1){
-					startTime = stack[stack.length - 1].time;
-					if(stack[stack.length - 1].name == event.name){
-						stack.pop();
+			if(threadId !== undefined){//||this.selectedRegions.includes(event["group-id"])){
+				if(event["event-type"] == "exit"){
+					var startTime = me.timeStamps.min;
+					if(stack.length >= 1){
+						startTime = stack[stack.length - 1].time;
+						if(stack[stack.length - 1].name == event.name){
+							stack.pop();
+						}
 					}
+			    	me.threads[threadId].traces.push({
+			        	"start": startTime,
+			        	"end": event.time,
+			        	"name": event["name"],
+			        	"region": event["group-id"],
+			        	"level": level[threadId]
+			    	});
+			    	level[threadId]--;
+				}else if(event["event-type"] == "entry"){
+					stack.push(event);
+					level[threadId]++;
+				}else if (event["event-type"] == "counter"||event["event-type"] == "send"||event["event-type"] == "trace end"){
+				}else{
+				    console.log("ERROR! "+event["event-type"]);
 				}
-		    	me.threads[threadId].traces.push({
-		        	"start": startTime,
-		        	"end": event.time,
-		        	"name": event["name"],
-		        	"region": event["group-id"],
-		        	"level": level[threadId]
-		    	});
-		    	level[threadId]--;
-			}else if(event["event-type"] == "entry"){
-				stack.push(event);
-				level[threadId]++;
-			}else if (event["event-type"] == "counter"||event["event-type"] == "send"||event["event-type"] == "trace end"){
-			}else{
-			    console.log("ERROR! "+event["event-type"]);
 			}
 		});
 		while(stack.length>0){

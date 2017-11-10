@@ -14,24 +14,9 @@ class Thread {
         this.maxUnitNum = data.timeStamps.max/this.timeUnit;
 
         this.traces = [];
-        this.traceSummary = [];
-        this.maxLen = 0;
-        for(var i = 0; i<data.timeStamps.max/this.timeUnit; i++){
-        	var acc = 0;
-        	for(var j = 0; j<traceSummary.length; j++){
-        		if(traceSummary[j][i]>0){
-        			var obj = {};
-        			obj["start"] = acc;
-        			acc+=traceSummary[j][i];
-        			obj["end"] = acc;
-        			this.maxLen = Math.max(this.maxLen,acc);
-        			obj["region"] = j;
-        			obj["time"] = i*this.timeUnit;
-        			this.traceSummary.push(obj);
-        		}
-        	}
-        }
-        this.summary = [];
+        this.fullSummary = traceSummary;
+        this.querySummary = [];
+        this.filteredSummary = [];
 
         //traces vis
         this.main_lane_text = {};
@@ -90,12 +75,33 @@ class Thread {
         this.groups.selectAll("rect").remove();
         this.tooltip.selectAll("text").remove();
 	}
+
+	setSummary(){
+		var me = this;
+		this.querySummary = [];
+        this.maxLen = 0;
+        for(var i = Math.ceil(me.data.timeStamps.min/this.timeUnit); i<me.data.timeStamps.max/this.timeUnit; i++){
+        	var acc = 0;
+        	for(var j = 0; j<me.fullSummary.length; j++){
+        		if(me.data.selectedRegions.includes(j)&&me.fullSummary[j][i]>0){
+        			var obj = {};
+        			obj["start"] = acc;
+        			acc+=me.fullSummary[j][i];
+        			obj["end"] = acc;
+        			this.maxLen = Math.max(this.maxLen,acc);
+        			obj["region"] = j;
+        			obj["time"] = i*this.timeUnit;
+        			this.querySummary.push(obj);
+        		}
+        	}
+        }
+	}
 	
 	filter(){
 		var me = this;
 		var brush = me.data.timeStamps;
-		var summary = me.traceSummary.filter(function(d){
-			return (d.time <= brush.max && d.time >= brush.min)||(d.time+me.timeUnit >= brush.min&&d.time+me.timeUnit <= brush.max);
+		this.filteredSummary = me.querySummary.filter(function(d){
+			return (me.data.selectedRegions.includes(d.region))&&((d.time <= brush.max && d.time >= brush.min)||(d.time+me.timeUnit >= brush.min&&d.time+me.timeUnit <= brush.max));
 		});
 
 		var visItems = me.traces.filter(function(d) {
@@ -150,7 +156,6 @@ class Thread {
 		this.visItems = visItems;
 		this.locSets = locSets;
 		this.locMaps = locMaps;
-		this.summary = summary;
 	}
 	
     print() {

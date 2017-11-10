@@ -196,7 +196,7 @@ class TraceVis {
     updateSummary(thread){
         var me = this;
         var rects = thread.itemRect.selectAll("rect") //asynchronized mode!!!
-            .data(thread.summary); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged            
+            .data(thread.filteredSummary); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged            
 
         var timeUnit = me.main.timeUnit;
         rects.enter().append("rect") //only re-enter updated rect!!!

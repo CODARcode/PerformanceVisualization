@@ -16,6 +16,8 @@ class Main {
         var timeMax = 4000000;
         var timeUnit = 1000;
         me.timeUnit = timeUnit;
+        me.timeMax = timeMax;
+        me.timeBrushStack = [];
 
         for(var i = 0; i<nodeNum; i++){
             traceArray.push([]);
@@ -82,26 +84,43 @@ class Main {
         return me.c20(region);
     }
 
+    goBackBrush(){
+        var me = this;
+        me.timeBrushStack.pop();
+        var len = me.timeBrushStack.length;
+        if(len==0){
+            me.updateBrush({x0:0,x1:me.timeMax,nodes:[]});
+        }else{
+            me.updateBrush({x0:me.timeBrushStack[len-1][0],x1:me.timeBrushStack[len-1][1],nodes:[]});
+        }
+    }
+
     updateBrush(extent){
         var me = this;
         var needQuery = false;
         if(extent.nodes.length!=0){
             me.traces.nodeList = extent.nodes;
         }
-        if (extent.x0 < extent.x1) {
+
+        if (extent.x0 < extent.x1 && (me.traces.timeStamps.min != extent.x0||me.traces.timeStamps.max != extent.x1)) {
             me.traces.timeStamps.min = extent.x0;
             me.traces.timeStamps.max = extent.x1;
+            me.timeBrushStack.push([extent.x0,extent.x1]);
             if(extent.x1 - extent.x0 < me.timeUnit){
                 needQuery = true;
             }
         }
+        me.queryTraces(needQuery);
+    }
 
-
-        if(needQuery){
+    queryTraces(queryDatabase){
+        var me = this;
+        if(queryDatabase){
             console.log("query database");
             me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
             me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
         }else{
+            me.traces.querySummary();
             me.update(false);
         }
     }
@@ -155,7 +174,7 @@ class Main {
     }
     getEvents(me, obj, queryStr) {
         me.traces.setTraces(obj);
-        me.update({x0:me.traces.timeStamps.min,x1:me.traces.timeStamps.max,nodes:me.traces.nodeList}, true)
+        me.update(true)
     }
 
     getMessages(me, obj, queryStr){
@@ -221,8 +240,11 @@ $('.zer li > a').click(function(e) {
         $('#t_group').hide();
         $('#c_group').show();
     }
-
     main.setMeasure(main.measure,main.timerType);
+});
+
+$('#goback').click(function(e) {
+    main.goBackBrush();
 });
 $('.fir li > a').click(function(e) {
     $('#timer').text(this.innerHTML);

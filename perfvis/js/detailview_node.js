@@ -11,7 +11,7 @@ class StackedBars{
         var bb = document.querySelector('#StackedBars')
                     .getBoundingClientRect();
        	this.w = bb.right - bb.left - this.m[1] - this.m[3];
-        this.h = 500 - this.m[0] - this.m[2];
+        this.h = 300 - this.m[0] - this.m[2];
         //chart
 
         this.chart = d3.select("#StackedBars")

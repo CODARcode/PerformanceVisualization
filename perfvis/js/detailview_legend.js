@@ -26,7 +26,16 @@ class Legend{
 		  .attr("height", 9)
 		  .style("fill", function(d) {
             return main.getRegionColor(d);
-            });
+            })
+		  .on("click",function(d,i){
+		  	main.traces.setSelectedRegions(i);
+		  	if(main.traces.selectedRegions.includes(i)){
+                d3.select(this).attr("fill-opacity", "1");
+		  	}else{
+                d3.select(this).attr("fill-opacity", "0.2");
+		  	}
+		  	main.updateBrush({x0:0,x1:0,nodes:[]});
+		  });
 		 
 		legend.append("text")
 		  .attr("x", 20)
@@ -36,5 +45,6 @@ class Legend{
 		  .text(function(d) { 
 		  	return d;
 		  });
+
 	}
 }
