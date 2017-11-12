@@ -97,29 +97,37 @@ class Main {
 
     updateBrush(extent){
         var me = this;
-        var needQuery = false;
         if(extent.nodes.length!=0){
             me.traces.nodeList = extent.nodes;
         }
-
-        if (extent.x0 < extent.x1 && (me.traces.timeStamps.min != extent.x0||me.traces.timeStamps.max != extent.x1)) {
+        var queryDB = true;
+        var showDetail = false;
+        var timeStamps = me.traces.timeStamps;
+        if (extent.x0 < extent.x1 && (timeStamps.min != extent.x0||timeStamps.max != extent.x1)) {
+            if(extent.x1 - extent.x0 < 10*me.timeUnit){
+                showDetail = true;
+                if(timeStamps.max - timeStamps.min<10*me.timeUnit&& extent.x1>=timeStamps.min&&extent.x1<=timeStamps.max){
+                    queryDB = false;
+                }
+            }
             me.traces.timeStamps.min = extent.x0;
             me.traces.timeStamps.max = extent.x1;
             me.timeBrushStack.push([extent.x0,extent.x1]);
-            if(extent.x1 - extent.x0 < 10*me.timeUnit){
-                needQuery = true;
-            }
         }
-        me.queryTraces(needQuery);
+        me.queryTraces(showDetail, queryDB);
     }
 
-    queryTraces(queryDatabase){
+    queryTraces(showDetail, queryDB){
         var me = this;
-        if(queryDatabase){
-            console.log("query database");
-            me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
-            me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
-        }else{
+        if(showDetail){
+            if(queryDB){
+                console.log("query database");
+                me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
+                me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
+            }else{
+                me.update(true);
+            }
+         }else{
             me.traces.querySummary();
             me.update(false);
         }

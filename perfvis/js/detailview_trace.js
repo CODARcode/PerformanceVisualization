@@ -133,7 +133,8 @@ class TraceVis {
         fortsvg.exit().remove();
 
         var messagecsvg = this.messageCircles.selectAll("circle")
-            .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
+            .data(linkMessages)
+            //.filter(function(d) { return me.main.traces.nodeList.includes(d.source)&&me.main.traces.nodeList.includes(d.destination);}); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
 
         messagecsvg.enter().append("circle") //only re-enter updated rect!!!
             .attr("cx", function(d) {
@@ -158,7 +159,8 @@ class TraceVis {
         messagecsvg.exit().remove();
 
         var messagesvg = this.messageLines.selectAll("line")
-            .data(linkMessages); //the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
+            .data(linkMessages)
+            //.filter(function(d) { return me.main.traces.nodeList.includes(d.source)&&me.main.traces.nodeList.includes(d.destination);});//the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
         messagesvg.enter().append("line") //only re-enter updated rect!!!
             .attr("x1", function(d) {
                 return me.x1(d.start);
