@@ -95,7 +95,7 @@ class StackedBars{
                 return me.x(d.start);
             })
             .attr("y", function(d) {
-                return (d.level-thread.min_level) * 2;
+                return (d.level-thread.min_level) * 10;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(d.end) - me.x(d.start), 1);
