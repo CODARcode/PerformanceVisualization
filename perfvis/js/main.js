@@ -106,7 +106,7 @@ class Main {
             me.traces.timeStamps.min = extent.x0;
             me.traces.timeStamps.max = extent.x1;
             me.timeBrushStack.push([extent.x0,extent.x1]);
-            if(extent.x1 - extent.x0 < me.timeUnit){
+            if(extent.x1 - extent.x0 < 10*me.timeUnit){
                 needQuery = true;
             }
         }

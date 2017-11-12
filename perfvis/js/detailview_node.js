@@ -101,19 +101,13 @@ class StackedBars{
                 return Math.max(me.x(d.end) - me.x(d.start), 1);
             })
             .attr("height", function(d) {
-                return 2;// / locSets.length;
+                return 10;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);
             })
             .attr("stroke","black")
-            .attr("stroke-width",function(){
-                if((brush.max - brush.min)<3000){
-                    return "0.5px";
-                }else{
-                    return 0;
-                }
-            })
+            .attr("stroke-width", "0.5px")
             .attr("opacity", function(d){
                 return (d.region.length+110)/(120+d.region.length);
             })
