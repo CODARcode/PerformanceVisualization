@@ -25,6 +25,7 @@ class Thread {
 		//statistic vis
         this.barRect;
         this.idLabel = {};
+        this.profileSum = 0;
 
         //profile vis
         this.groups;
@@ -56,7 +57,6 @@ class Thread {
             	me.counterProfiles[index][d.Counter] = d;
         	});	
 		}
-
 		function isNumber(n) {
   			return !isNaN(parseFloat(n)) && isFinite(n);
 		}
@@ -83,7 +83,7 @@ class Thread {
         for(var i = Math.ceil(me.data.timeStamps.min/this.timeUnit); i<me.data.timeStamps.max/this.timeUnit; i++){
         	var acc = 0;
         	for(var j = 0; j<me.fullSummary.length; j++){
-        		if(me.data.selectedRegions.includes(j)&&me.fullSummary[j][i]>0){
+        		if(me.data.selectedRegions.includes(j)&&i<me.fullSummary[j].length&&me.fullSummary[j][i]>0){
         			var obj = {};
         			obj["start"] = acc;
         			acc+=me.fullSummary[j][i];

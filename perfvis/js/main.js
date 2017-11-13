@@ -13,7 +13,7 @@ class Main {
         var traceArray = [];
         var messageArray = [];
         var nodeNum = 69;
-        var timeMax = 4000000;
+        var timeMax = 6400000;//4000000
         var timeUnit = 1000;
         me.timeUnit = timeUnit;
         me.timeMax = timeMax;
@@ -168,7 +168,7 @@ class Main {
             me.statisticsvis.init(thread);
             me.treemaps.updateThread(thread, 0, "Calls");
         });
-        me.profilevis.setXAxis(profileMaxX);
+        //me.profilevis.setXAxis(profileMaxX);
     }
 
     sendQuery(queryStr, callback) {

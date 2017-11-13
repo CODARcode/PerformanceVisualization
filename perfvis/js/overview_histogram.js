@@ -69,11 +69,11 @@ class Histogram {
                 return me.x(i*me.binUnit);
             })
             .attr("y", function(d) {
-                return me.canvasHeight - me.y(d);
+                return me.y(d);
             })
             .attr("width", me.x(me.binUnit))
             .attr("height", function(d) {
-                return me.y(d);// / locSets.length;
+                return me.canvasHeight - me.y(d);// / locSets.length;
             })
             .attr("fill", "gray")
             .append("title") //asynch mode may generate different brush extents

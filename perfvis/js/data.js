@@ -127,6 +127,8 @@ class Data {
 	}
 
 	setProfiles(profiles, timerType){
+		//console.log(timerType);
+		//console.log(profiles);
 		var me = this;
 		var timerId = parseInt(timerType);
 		profiles.forEach(function(profile){
