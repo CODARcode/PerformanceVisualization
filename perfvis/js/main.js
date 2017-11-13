@@ -122,8 +122,10 @@ class Main {
         if(showDetail){
             if(queryDB){
                 console.log("query database");
-                me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
-                me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
+                //me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
+                //me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
+//                me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max + ":" + me.traces.nodeList, me.getMessages);
+                me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max + ":" + me.traces.nodeList, me.getEvents);
             }else{
                 me.update(true);
             }

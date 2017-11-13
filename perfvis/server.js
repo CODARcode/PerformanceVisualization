@@ -14,11 +14,19 @@ http.createServer(function(request, response) {
     if (uri.substring(0, 10) == "/overview/"){
         query("summary",{},response);
     }else if (uri.substring(0, 10) == "/messages/"){
+        //var strArray = uri.substring(10).split(":");
+        //console.log(strArray[0] + ", " + strArray[1] + ", " + strArray[2]);
+        //var numArray = strArray[2].split(",").map(Number);
+        //query("trace_events",{$and:[{"node-id": {$in: numArray}}, {$or:[{"event-type":"send"},{"event-type":"receive"}]},{time:{$gte:parseInt(strArray[0]),$lte:parseInt(strArray[1])}}]},response);
         var timestamps = uri.substring(10).split(":");
         query("trace_events",{$and:[{$or:[{"event-type":"send"},{"event-type":"receive"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 8) == "/events/"){
-        var timestamps = uri.substring(8).split(":");
-        query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
+        var strArray = uri.substring(8).split(":");
+        //console.log(strArray[0] + ", " + strArray[1] + ", " + strArray[2]);
+        var numArray = strArray[2].split(",").map(Number);
+        query("trace_events",{$and:[{"node-id": {$in: numArray}}, {$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(strArray[0]),$lte:parseInt(strArray[1])}}]},response);
+        //var timestamps = uri.substring(8).split(":");
+        //query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);
