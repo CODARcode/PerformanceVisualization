@@ -7,8 +7,6 @@ class HeatMap{
         this.noThreads = traceArray.length;//
         this.main = main;
         this.binNum = 800;
-
-        this.binNum = 800;
         this.binUnit = timeEnd/this.binNum;
         this.traces = [];
         for(var i = 0; i < this.noThreads; i++){
@@ -101,7 +99,7 @@ class HeatMap{
             .attr("y", me.y2(id))
             .attr("fill", "DimGray ")
             .attr("fill-opacity", function(d){
-                return 1*d/me.maxOpacity;
+                return 1.5*d/me.maxOpacity;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(me.binUnit), 1);

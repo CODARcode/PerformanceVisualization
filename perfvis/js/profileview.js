@@ -67,7 +67,7 @@ class ProfileVis {
     }
 
     updateThread(thread) {
-        //console.log(thread.location);
+
 		var me = this;
 		var barheight = me.h/me.noThreads-3;
 
@@ -80,14 +80,14 @@ class ProfileVis {
             .data(function(d){return [d];})
             .enter()
             .append("rect")
-            .attr("x",function(d) {return me.x(d[0][0]); })
+            .attr("x",function(d) {return d[0][0]/thread.profileSum*me.w; })
             .attr("y", function(d) {
                 return me.y(thread.location);
             })
             .attr("height", barheight)
             .attr("width", function(d) {
                 //console.log(d);
-                return Math.max(me.x(d[0][1] - d[0][0]),0.1);
+                return Math.max((d[0][1] - d[0][0])/thread.profileSum*me.w,0.1);
             })
             .on("mouseover", function() {
                 thread.tooltip.style("display", null);
@@ -136,6 +136,7 @@ class ProfileVis {
             obj[d] = profiles[d][me.measure];
             //obj[d]["key"] = d;
         });
+        thread.profileSum = sum;
         obj['total'] = sum;
         //console.log(obj);
         this.svg.selectAll("g.thread" + thread.location).remove();
