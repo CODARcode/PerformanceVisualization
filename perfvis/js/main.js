@@ -104,7 +104,7 @@ class Main {
         var showDetail = false;
         var timeStamps = me.traces.timeStamps;
         if (extent.x0 < extent.x1 && (timeStamps.min != extent.x0||timeStamps.max != extent.x1)) {
-            if(extent.x1 - extent.x0 < 10*me.timeUnit){
+            if(extent.x1 - extent.x0 < 20*me.timeUnit){
                 showDetail = true;
                 if(timeStamps.max - timeStamps.min<10*me.timeUnit&& extent.x1>=timeStamps.min&&extent.x1<=timeStamps.max){
                     queryDB = false;
@@ -124,7 +124,7 @@ class Main {
                 console.log("query database");
                 //me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getMessages);//Queries the messages
                 //me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max, me.getEvents);//entry and exit events of the traces.
-//                me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max + ":" + me.traces.nodeList, me.getMessages);
+                me.sendQuery("messages/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max + ":" + me.traces.nodeList, me.getMessages);
                 me.sendQuery("events/" + me.traces.timeStamps.min + ":" + me.traces.timeStamps.max + ":" + me.traces.nodeList, me.getEvents);
             }else{
                 me.update(true);

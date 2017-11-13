@@ -3,7 +3,12 @@
 class Data {
 	constructor(noThreads, traceSummary, timeMax, timeUnit){
 		var me = this;
-		this.fort = [{"file":"trajectory-2.002000","start":2.95E+06,"end":3.80E+06,"nodestart":0,"nodeend":4},{"file":"trajectory-2.006","start":6.12998E+06,"end":6.12804E+06,"nodestart":0,"nodeend":4}];
+		this.fort = [{"file":"trajectory-2.002","start":2.95E+06,"end":2.80E+06,"nodestart":0,"nodeend":4},
+					 {"file":"trajectory-2.004","start":2.9502E+06,"end":2.802E+06,"nodestart":6,"nodeend":10},
+		      		 {"file":"trajectory-2.006","start":2.9702E+06,"end":2.822E+06,"nodestart":16,"nodeend":20},
+		      		 {"file":"trajectory-2.008","start":2.9704E+06,"end":2.824E+06,"nodestart":22,"nodeend":26},
+		      		 {"file":"trajectory-4.002","start":2.706E+06,"end":1.89E+06,"nodestart":60,"nodeend":64},
+		      		 {"file":"trajectory-4.004","start":2.706E+06,"end":1.89E+06,"nodestart":62,"nodeend":66}];
 		this.regions = ["Others", "TAU_Others", "TAU_USER", "TAU_DEFAULT", "MPI", "FLUSH", "MPI_Allgather()", "MPI_Barrier()"];
 		this.noThreads = noThreads;		
 		//to set the time range change here. min and max are the time range in the overview, start and end are the time in the detailed view.
