@@ -103,7 +103,6 @@ class Thread {
 		this.filteredSummary = me.querySummary.filter(function(d){
 			return (me.data.selectedRegions.includes(d.region))&&((d.time <= brush.max && d.time >= brush.min)||(d.time+me.timeUnit >= brush.min&&d.time+me.timeUnit <= brush.max));
 		});
-
 		var visItems = me.traces.filter(function(d) {
 			return (d.start <= brush.max && d.start >= brush.min)||(d.end >= brush.min&&d.end <= brush.max);// && me.location >= ~~brush.y0 && me.location <= ~~brush.y1;
 		});

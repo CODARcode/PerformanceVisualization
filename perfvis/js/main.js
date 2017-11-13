@@ -138,8 +138,8 @@ class Main {
     update(detail) {
         var me = this;
         this.detailview.update();
-        this.profilevis.update();
-        this.statisticsvis.update();
+        //this.profilevis.update();
+        //this.statisticsvis.update();
         if(detail){
             me.detailview.tracevis.updateMessages();
         }
@@ -148,8 +148,8 @@ class Main {
             if(me.traces.nodeList.indexOf(i)!=-1){
                 thread.filter();
                 me.detailview.tracevis.updateThread(thread, detail);
-                me.profilevis.updateThread(thread);
-                me.statisticsvis.updateThread(thread);
+                //me.profilevis.updateThread(thread);
+                //me.statisticsvis.updateThread(thread);
             }
         });
         this.stackedBars.update();
@@ -230,9 +230,9 @@ $('.vis li > a').click(function(e) {
 });
 $('.zer li > a').click(function(e) {
     $('#pid').text(this.innerHTML);
-    if(this.innerHTML == "NWCHEM Timer"){
+    if(this.innerHTML == "Timers"){
         main.timerType = 0;
-    }else if(this.innerHTML =="NWCHEM Counter"){
+    }else if(this.innerHTML =="Counters"){
         main.timerType = 1;
     }else if(this.innerHTML =="TAU Timer"){
         main.timerType = 2;
