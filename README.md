@@ -7,8 +7,8 @@ There are four visualization components:
 * **Detailed view** shows the function calls and the messages in the selected time range. The functions are visualized with nested rectangels that indicate their depthes in the call path. We use different transparency for overlapped functions. They are colored according to different call groups. Additionally, we visualized the message passing (send and receive) between functions. 
 ![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/traces.png "Detailed trace events")
 The user can further zoom in in this view to obtain a zoom-in effect. In this mode, we add the stroke of the rectangle to enhance the separation of different functions. 
-![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/traces_details.png "Zoom-in trace events")
+![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/trace_details.png "Zoom-in trace events")
 * **Statistical view** shows the accumulated execution time of the functions in the selected time range and nodes.
 ![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/statistics.png "Statistics")
 * **Profile view** shows the metrics of timers and counters for each nodes and threads.
-![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/profiles.png "Profiles")
+![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/profile.png "Profiles")
