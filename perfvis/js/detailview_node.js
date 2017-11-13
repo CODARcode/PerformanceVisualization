@@ -89,6 +89,7 @@ class StackedBars{
         var rects = thread.nodeRect.selectAll("rect") //asynchronized mode!!!
             .data(thread.visItems);//the data is updated, then list the updated attrs below, otherwise these attr remain unchanged
 
+        //console.log(thread.visItems);
         rects.enter().append("rect") //only re-enter updated rect!!!
             .attr("x", function(d) {
                 return me.x(d.start);
@@ -115,7 +116,7 @@ class StackedBars{
             })
             .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
-                return d.region;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
+                return d.name; //d.region;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
             });
 
         rects.exit().remove();
