@@ -99,7 +99,7 @@ class HeatMap{
                 return me.x(i*me.binUnit);
             })
             .attr("y", me.y2(id))
-            .attr("fill", "gray")
+            .attr("fill", "DimGray ")
             .attr("fill-opacity", function(d){
                 return 1*d/me.maxOpacity;
             })
@@ -121,10 +121,10 @@ class HeatMap{
                 var y4 = me.y2(d.nodeend);
                 return "M"+x1+" "+y1+" L"+x1+" "+y2+" L"+x2+" "+y3+" L"+x2+" "+y4+"Z";
             })
-            .attr("fill","white")
+            .attr("fill","snow")
             //.attr("stroke","gray")
-            .attr("opacity", "0.2")
-            .attr("fill-opacity", "0.1")
+            .attr("opacity", "0.1")
+            .attr("fill-opacity", "0.2")
             .append("title") //asynch mode may generate different brush extents
             .text(function(d) {
                 return "filename: "+d.file;// + ": " + (Math.min(brush.x1, d.end) - Math.max(brush.x0, d.start)).toString();
