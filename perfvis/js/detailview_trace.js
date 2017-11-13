@@ -275,7 +275,7 @@ class TraceVis {
             })
             .attr("stroke","gray")
             .attr("stroke-opacity", 0.5)
-            .attr("stroke-width", "0.1px")
+            .attr("stroke-width", "0.05px")
             .on("mouseover", function(d) {
                 me.mouseOverPos = d;
             })

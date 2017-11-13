@@ -52,15 +52,14 @@ class ProfileVis {
 
     update() {
 		var me = this;
-        //me.y.domain([~~brush.y0, Math.min(~~brush.y1 + 1, me.noThreads)]);
-        //me.localLocLength = ~~brush.y1 - ~~brush.y0 + 1; //~~ means floor()
-
+        /*
         var nodes = me.main.traces.nodeList;
         var ranges = [];
         for(var i = 0;i<nodes.length;i++){
             ranges.push(me.m[0]+(i+1)*me.bandWidth);
         }
         me.y.domain(nodes).range(ranges);
+        */
     }
 
     setMeasure(measure){
@@ -74,20 +73,21 @@ class ProfileVis {
 
         thread.profIdLabel
             .attr("y", function(){
-                return me.y(thread.location);
+                return me.y(thread.location+1);
             });
 
         thread.groups.selectAll("rect")
-            .data(function(d){return d;})
+            .data(function(d){return [d];})
             .enter()
             .append("rect")
-            .attr("x",function(d) {return me.x(d[0]); })
+            .attr("x",function(d) {return me.x(d[0][0]); })
             .attr("y", function(d) {
                 return me.y(thread.location);
             })
             .attr("height", barheight)
             .attr("width", function(d) {
-                return Math.max(me.x(d[1] - d[0]),0.1);
+                //console.log(d);
+                return Math.max(me.x(d[0][1] - d[0][0]),0.1);
             })
             .on("mouseover", function() {
                 thread.tooltip.style("display", null);
@@ -99,7 +99,7 @@ class ProfileVis {
                 var xPosition = d3.mouse(this)[0] - 15;
                 var yPosition = d3.mouse(this)[1] - 25;
                 thread.tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-                thread.tooltip.select("text").text(d.key + ":" + (d[1]-d[0]));
+                thread.tooltip.select("text").text(d.key + ":" + (d[0][1] - d[0][0]));
             });
 
 
@@ -134,6 +134,7 @@ class ProfileVis {
         Object.keys(profiles).forEach(function(d){
             sum += profiles[d][me.measure];
             obj[d] = profiles[d][me.measure];
+            //obj[d]["key"] = d;
         });
         obj['total'] = sum;
         //console.log(obj);

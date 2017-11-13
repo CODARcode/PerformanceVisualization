@@ -71,6 +71,9 @@ class Data {
 							stack.pop();
 						}
 					}
+					//if(threadId<64&&event["group-id"]){
+					//	console.log(event);
+					//}
 			    	me.threads[threadId].traces.push({
 			        	"start": startTime,
 			        	"end": event.time,

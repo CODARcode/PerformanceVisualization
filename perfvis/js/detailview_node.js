@@ -65,8 +65,7 @@ class StackedBars{
         //update main x axis
         me.mainAxisSvg.call(me.mainAxis);
         if(me.nodeIndex!=-1){
-
-        	me.updateThread(me.main.traces.threads[me.nodeIndex]);	
+        	me.updateThread(me.main.traces.threads[me.nodeIndex]);
         }
 
 	}
@@ -84,7 +83,7 @@ class StackedBars{
                 })
                 .attr("font-size", "16px")
                 .attr("font-family", "sans-serif");
-        var min_level = -100;
+        var barWidth = me.h/(thread.max_level- thread.min_level+1);
 
         var brush = me.main.traces.timeStamps;
         var rects = thread.nodeRect.selectAll("rect") //asynchronized mode!!!
@@ -95,19 +94,19 @@ class StackedBars{
                 return me.x(d.start);
             })
             .attr("y", function(d) {
-                return (d.level-thread.min_level) * 10;
+                return (d.level-thread.min_level) * barWidth;
             })
             .attr("width", function(d) {
                 return Math.max(me.x(d.end) - me.x(d.start), 1);
             })
             .attr("height", function(d) {
-                return 10;// / locSets.length;
+                return barWidth;// / locSets.length;
             })
             .attr("fill", function(d) {
                 return me.main.getColor(d.region);
             })
             .attr("stroke","black")
-            .attr("stroke-width", "0.5px")
+            .attr("stroke-width", "0.05px")
             .attr("opacity", function(d){
                 return (d.region.length+110)/(120+d.region.length);
             })
