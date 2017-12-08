@@ -21,11 +21,11 @@ Software Dependency: Our framework is a Web Socket application. The front end is
 
 Software execution:
 * Run MongoDB server to enable database access, and connect to our imported data *mongodbdata*:
-`mongod --dbpath mongodbdata`
+```mongod --dbpath mongodbdata```
 * Link the mongodb module to Node.js:
-`npm link mongodb`
+```npm link mongodb```
 * Download the repo and go to the *perfvis* directory to start the back end:
-`node server.js`
+```node server.js```
 
 # Interface Description
 There are five visualization components:
