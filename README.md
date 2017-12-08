@@ -29,7 +29,7 @@ mongod --dbpath mongodbdata
 ```
 npm link mongodb
 ```
-* Download the repo and go to the *perfvis* directory to start the back end:
+* Download the repo and go to the `perfvis` directory to start the back end:
 ```
 node server.js
 ```
