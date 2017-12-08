@@ -21,7 +21,7 @@ Software Dependency: Our framework is a Web Socket application. The front end is
 
 # Run
 Software execution:
-* Run MongoDB server to enable database access, and connect to our imported data *mongodbdata*:
+* Run MongoDB server to enable database access, and connect to our imported data `mongodbdata`:
 ```
 mongod --dbpath mongodbdata
 ```
