@@ -16,6 +16,8 @@ We provide four levels of details for trace visualization:
 * trace detail level -- showing real function execution in a selected range of time for selected node/core.
 * node detail level -- showing an alternative cascaded view of the selected trace function execution. 
 
+Our current release is for offline workflow examples. However, our front end that contains majority of functionalities is independent and well prepared for online access. The back end storage MongoDB can be replaced when the online data acess API is ready.
+
 # Installation
 Software Dependency: Our framework is a Web Socket application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, the data in json format must be generated and import to MongoDB.
 
