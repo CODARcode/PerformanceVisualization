@@ -33,7 +33,9 @@ npm link mongodb
 ```
 node server.js
 ```
-* Open any web browser, type the url with port number to start the front end.
+* Open any web browser, type the url with port number to start the front end. In our case, the url:port is *visws.csi.bnl.gov:8000*. You can modify that in the first two lines of `perfvis/js/main.js` file:
+```
+```
 
 # Interface Description
 There are five visualization components:
