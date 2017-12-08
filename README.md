@@ -17,7 +17,7 @@ We provide four levels of details for trace visualization:
 * node detail level -- showing an alternative cascaded view of the selected trace function execution. 
 
 # Installation
-Software Dependency: Our framework is a Web Socket application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, the data in json format must be generated and import to MongoDB. <span style="color:blue">An example of how to import the json file is included.</span>
+Software Dependency: Our framework is a Web Socket application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, the data in json format must be generated and import to MongoDB.
 
 # Run
 Software execution:
