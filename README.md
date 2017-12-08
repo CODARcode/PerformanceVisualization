@@ -40,7 +40,7 @@ var global_host = "visws.csi.bnl.gov",
 ```
 
 # Interface Description
-There are five visualization components:
+There are five visualization components: *overview*, *trace view*, *node view*, *profile view* and *anomaly view*. We use a composition of LAMMPS and NWCHEM examples to illustrate their functionalities.
 
 * **Overview** shows the summary of the whole workflow execution. The trace events indicating the start and end time of each function call is shown in a timeline. The intensity shows the depth of the call path. We also visualized the message counts (sent or received) in a separate histogram view along the timeline. For the interaction, it allows the user to select a time range of interest and see more details in the detailed view panel. In this example, we visualized a parallel workflow running on 69 nodes/threads. Flow diagrams indicate the file transfers among nodes.
 
@@ -65,3 +65,7 @@ When zooming into certain granularity, the actual function calls are visualized 
 * **Profile view** shows the metrics of timers and counters for each nodes and threads of the workflow.
 
 ![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/profile.png "Profile")
+
+* **Anomaly view** show the anomaly detection result from the analysis stage. 
+
+![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/anomaly.png "Anomaly")
