@@ -49,6 +49,10 @@
                             <a href="#profileview">Profiles</a>
                         </li>
                         <li>
+                            <a href="#outlier">Outlier</a>
+                        </li>
+
+                        <li>
                             <a href="#statistics">Statistics</a>
                         </li>
 
@@ -196,6 +200,42 @@
                         </div>
                     </div>
                 </div>
+<div class="col-lg-12">
+                    <!-- Example Notifications Card -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <i class="fa fa-bar-chart"></i> Outlier Visualization:
+                            Functions:
+                            <div class="btn-group">
+                                <i class="dropdown-arrow dropdown-arrow-inverse"></i>
+                                <button class="btn btn-primary" id="outlier">-</button>
+                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+  </button>
+                                <ul class="dropdown-menu dropdown-inverse thi">
+                                    <!--li><a href="#outlier">sample1</a></li>
+                                    <li><a href="#outlier">sample2</a></li-->
+                                    <li><a href="#outlier">voidLAMMPS_NS--Run--command(int,char**)-voidLAMMPS_NS--Verlet--run(int)-MPI_Irecv()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Run--command(int,char**)-voidLAMMPS_NS--Verlet--run(int)-MPI_Send()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Run--command(int,char**)-voidLAMMPS_NS--Verlet--run(int)-MPI_Wait()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Verlet--run(int)-voidLAMMPS_NS--PairEAM--compute(int,int)-intLAMMPS_NS--PairEAM--pack_reverse_comm(int,int,double*)</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Verlet--run(int)-voidLAMMPS_NS--PairEAM--compute(int,int)-MPI_Irecv()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Verlet--run(int)-voidLAMMPS_NS--PairEAM--compute(int,int)-MPI_Send()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Verlet--run(int)-voidLAMMPS_NS--PairEAM--compute(int,int)-MPI_Wait()</a></li>
+                                    <li><a href="#outlier">voidLAMMPS_NS--Verlet--run(int)-voidLAMMPS_NS--PairEAM--compute(int,int)-voidLAMMPS_NS--PairEAM--unpack_forward_comm(int,int,double*)</a></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div class="row">
+                                <div class="col-sm-8" id="Outlier"></div>
+                            </div>
+                        </div>
+                        <div class="card-footer small text-muted">
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
@@ -225,8 +265,8 @@
     <script src="js/detailview_histogram.js"></script>
     <script src="js/detailview_legend.js"></script>
     <script src="js/detailview_node.js"></script>
-    <script src="js/profileview.js">
-    </script>
+    <script src="js/scatterplot.js"></script>
+    <script src="js/profileview.js"></script>
     <script src="js/treemapview.js">
     </script>
     <script src="js/statisticsview.js">
