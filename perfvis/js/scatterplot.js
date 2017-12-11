@@ -1,6 +1,5 @@
 class ScatterPlot{
-	constructor(main){
-        this.main = main;
+	constructor(){
         var bb = document.querySelector('#Outlier')
                     .getBoundingClientRect();
         this.margin = [40, 40, 40, 40]; //top right bottom left (space for label texts)
@@ -120,3 +119,8 @@ class ScatterPlot{
 		});
 	}
 }
+var scatterplot = new ScatterPlot();
+$('.thi li > a').click(function(e) {
+    $('#outlier').text(this.innerHTML);
+    scatterplot.update("../outliers/"+this.innerHTML+".csv");
+});

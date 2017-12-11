@@ -43,7 +43,6 @@ class Main {
         me.stackedBars = new StackedBars(me);
         me.treemaps = new Treemapview(me);
         me.legend = new Legend(me);
-        me.scatterplot = new ScatterPlot(me);
         me.profileNum = 6;
         me.sendQuery("profiles/0", me.getProfiles);//timers of the profiles.
         me.sendQuery("profiles/1", me.getProfiles);//counters of the profiles.        
@@ -268,10 +267,6 @@ $('.sec li > a').click(function(e) {
     main.setMeasure(main.measure,main.timerType);
 });
 
-$('.thi li > a').click(function(e) {
-    $('#outlier').text(this.innerHTML);
-    main.scatterplot.update("../outliers/"+this.innerHTML+".csv");
-});
 $(document).ready(function() {  
    $(".dropdown-menu li a")[0].click();
 });
