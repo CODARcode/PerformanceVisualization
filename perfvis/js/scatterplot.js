@@ -19,7 +19,7 @@ class ScatterPlot{
 
 		// setup fill color
 		var cValue = function(d) { return d.Manufacturer;};
-		this.color = d3.scaleOrdinal(d3.schemeCategory20).domain([0,10,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116]);
+		this.color = d3.scaleOrdinal(d3.schemeCategory20b).domain([0,10,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116]);
         this.svg = d3.select("#Outlier")
             .append("svg")
             .attr("width", me.w)
