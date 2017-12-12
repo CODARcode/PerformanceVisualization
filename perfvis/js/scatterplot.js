@@ -19,7 +19,7 @@ class ScatterPlot{
 
 		// setup fill color
 		var cValue = function(d) { return d.Manufacturer;};
-		this.color = d3.scaleOrdinal(['blue','red']).domain(['normal','outlier']);
+		this.color = d3.scaleOrdinal(d3.schemeCategory20).domain([0,10,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116]);
         this.svg = d3.select("#Outlier")
             .append("svg")
             .attr("width", me.w)
@@ -36,8 +36,9 @@ class ScatterPlot{
 		this.xAxisSVG.append("text")
 		      .attr("class", "label")
 		      .attr("x", width)
-		      .attr("y", -6)
+		      .attr("y", 30)
 		      .style("text-anchor", "end")
+		      .style("text-anchor", "middle")
 		      .text("time_by_lasttime");
 
 		  // y-axis
@@ -47,9 +48,10 @@ class ScatterPlot{
 		this.yAxisSVG.append("text")
 		      .attr("class", "label")
 		      .attr("transform", "rotate(-90)")
-		      .attr("y", 6)
+		      .attr("y", -30)
 		      .attr("dy", ".71em")
 		      .style("text-anchor", "end")
+		      .style("text-anchor", "middle")
 		      .text("time_diff");
 
 		  // draw legend
@@ -63,13 +65,13 @@ class ScatterPlot{
 		  legend.append("rect")
 		      .attr("x", width - 18)
 		      .attr("width", 18)
-		      .attr("height", 18)
+		      .attr("height", 12)
 		      .style("fill", me.color);
 
 		  // draw legend text
 		  legend.append("text")
 		      .attr("x", width - 24)
-		      .attr("y", 9)
+		      .attr("y", 6)
 		      .attr("dy", ".35em")
 		      .style("text-anchor", "end")
 		      .text(function(d) { return d;})
@@ -97,13 +99,18 @@ class ScatterPlot{
 		var yValue = function(d) { return d["time_diff"];}, // data -> value
 		    yMap = function(d) { return me.yScale(yValue(d));}; // data -> display
 		  // don't want dots overlapping axis, so add in buffer to data domain
-		  me.xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
-		  me.yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+		  var xRange = d3.max(data, xValue) - d3.min(data, xValue);
+		  var yRange = d3.max(data, yValue) - d3.min(data, yValue);
+		  me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
+		  me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
 		  me.xAxisSVG.call(me.xAxis)
 		  me.yAxisSVG.call(me.yAxis)
 
 		  // draw dots
 		  svg.selectAll(".dot").remove();
+		  	data.sort(function(a,b) {
+          		return d3.ascending(+a.class, +b.class);
+      		});
 		  var dots = svg.selectAll(".dot")
 		      .data(data);
 
@@ -112,10 +119,23 @@ class ScatterPlot{
 		      .attr("r", 3.5)
 		      .attr("cx", xMap)
 		      .attr("cy", yMap)
-		      .style("fill", function(d) { return color(d['class']);});
-
-		 dots.exit().remove();
-
+		      .style("fill", function(d) {
+		      	var fillColor = "gray";
+		      	if(d['class']==1){
+		      		fillColor = color(d['node']);
+		      	}
+		      	return fillColor;
+		      })
+		      .style("stroke","black")
+		      .style("stroke-width", function(d){
+		      	return (d['class']==0)?0:0.5;
+		      })
+		      .style("fill-opacity", function(d){
+		      	return (d['class']==0)?0.1:1;
+		      })
+   				.append("svg:title")
+		      .text(function(d){return d.node;});
+			dots.exit().remove();
 		});
 	}
 }
