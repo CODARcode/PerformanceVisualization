@@ -35,7 +35,7 @@ npm link mongodb
 ```
 node server.js
 ```
-* Open any web browser, type the url with port number to start the front end. In our case, the url:port is *visws.csi.bnl.gov:8000*. You can modify that in the first two lines of `perfvis/js/main.js` file:
+* Open any web browser that supports D3.js (we recommend Chrome, Firefox or Safari, but don't recommend IE), type the url with port number to start the front end. In our case, the url:port is *visws.csi.bnl.gov:8000*. You can modify that in the first two lines of `perfvis/js/main.js` file:
 ```javascript
 var global_host = "visws.csi.bnl.gov",
     global_port = 8000;
