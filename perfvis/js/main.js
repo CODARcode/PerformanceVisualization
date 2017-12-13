@@ -12,9 +12,9 @@ class Main {
         //set overview data
         var traceArray = [];
         var messageArray = [];
-        var nodeNum = 69;
-        var timeMax = 6400000;//4000000
-        var timeUnit = 1000;
+        var nodeNum = conf.nodeNum;
+        var timeMax = conf.timeMax;//4000000
+        var timeUnit = conf.timeUnit;
         me.timeUnit = timeUnit;
         me.timeMax = timeMax;
         me.timeBrushStack = [];
@@ -32,9 +32,8 @@ class Main {
 
         me.traces = new Data(nodeNum, traceArray, timeMax, timeUnit);
         me.c20 = d3.scaleOrdinal(d3.schemeCategory20).domain(me.traces.regions);
-        me.timerType = 0;
-        me.measure = "Calls";
-
+        me.timerType = conf.defaultProfile;
+        me.measure = conf.defaultMeasure;
 
         me.overview = new Overview(me, traceArray, messageArray, timeMax, timeUnit);
         me.detailview = new Detailview(me);
@@ -43,14 +42,9 @@ class Main {
         me.stackedBars = new StackedBars(me);
         me.treemaps = new Treemapview(me);
         me.legend = new Legend(me);
-        me.profileNum = 6;
+        me.profileNum = 2;//timers + counters
         me.sendQuery("profiles/0", me.getProfiles);//timers of the profiles.
-        me.sendQuery("profiles/1", me.getProfiles);//counters of the profiles.        
-        me.sendQuery("profiles/2", me.getProfiles);//timers of the profiles.
-        me.sendQuery("profiles/3", me.getProfiles);//counters of the profiles.        
-        me.sendQuery("profiles/4", me.getProfiles);//timers of the profiles.
-        me.sendQuery("profiles/5", me.getProfiles);//counters of the profiles.
-        
+        me.sendQuery("profiles/1", me.getProfiles);//counters of the profiles.
     }
 
     tickByTime(d){

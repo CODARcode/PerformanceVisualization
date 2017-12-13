@@ -32,7 +32,7 @@ http.createServer(function(request, response) {
             query("timers",{},response);
         }else if(uri.substring(10) == "1"){
             query("counters",{},response);
-        }else if(uri.substring(10) == "2"){
+        }/*else if(uri.substring(10) == "2"){
             query("timers1",{},response);
         }else if(uri.substring(10) == "3"){
             query("counters1",{},response);
@@ -40,7 +40,7 @@ http.createServer(function(request, response) {
             query("timers2",{},response);
         }else if(uri.substring(10) == "5"){
             query("counters2",{},response);
-        }
+        }*/
     } else {
         fs.exists(filename, function(exists) {
             if (!exists) {
