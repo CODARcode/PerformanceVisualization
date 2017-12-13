@@ -99,24 +99,28 @@ class ScatterPlot{
 
 		  //data = data.filter(function(d) {return d['class']==1;});
 
+		  data.forEach(function(d) {
+		  	d["time_diff"] /= 10000; //change time from millisecond to 10 microsecond  
+		  });
 
 		var xValue = function(d) { return d["time_by_lasttime"];}, // data -> value
 		    xMap = function(d) { return me.xScale(xValue(d));}; // data -> display
 
 		var yValue = function(d) { return d["time_diff"];}, // data -> value
 		    yMap = function(d) { return me.yScale(yValue(d));}; // data -> display
-		  // don't want dots overlapping axis, so add in buffer to data domain
-		  var xRange = d3.max(data, xValue) - d3.min(data, xValue);
-		  var yRange = d3.max(data, yValue) - d3.min(data, yValue);
-		  me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
-		  me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
-		  me.xAxisSVG.call(me.xAxis)
-		  me.yAxisSVG.call(me.yAxis)
+		
+		// don't want dots overlapping axis, so add in buffer to data domain
+		var xRange = d3.max(data, xValue) - d3.min(data, xValue);
+		var yRange = d3.max(data, yValue) - d3.min(data, yValue);
+		me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
+		me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
+		me.xAxisSVG.call(me.xAxis)
+		me.yAxisSVG.call(me.yAxis)
 
 		  //----------------xw---------------------------------
 		// compute 2D histogram of the data
-		var width = 100; //me.width;
-		var height = 100; //me.width;
+		var width = 200; //me.width;
+		var height = 200; //me.width;
 		var xScale = d3.scaleLinear().range([0, width]).domain([d3.min(data, xValue), d3.max(data, xValue)]);
 		var yScale = d3.scaleLinear().range([height, 0]).domain([d3.min(data, yValue), d3.max(data, yValue)]);
 		var xRevScale = d3.scaleLinear().domain([0, width]).range([d3.min(data, xValue), d3.max(data, xValue)]);
@@ -166,7 +170,7 @@ class ScatterPlot{
 		console.log(data.length);
 
 		var sizeValue = function(d) { return d["size"];};
-		var sizeScale = d3.scaleLinear().range([3.5, 35]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
+		var sizeScale = d3.scaleLog().range([5, 35]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
 		var sizeMap = function(d) { return sizeScale(sizeValue(d));};
 		//-------------------------------------------------------
 
@@ -199,10 +203,10 @@ class ScatterPlot{
 		      })
 		      .style("stroke","black")
 		      .style("stroke-width", function(d){
-		      	return (d['class']==0)?0:0;
+		      	return (d['class']==0)?0:0.3;
 		      })
 		      .style("fill-opacity", function(d){
-		      	return (d['class']==0)?0.5:0.8;
+		      	return (d['class']==0)?0.3:0.8;
 		      })
    				.append("svg:title")
 		      .text(function(d){return d.node;});
