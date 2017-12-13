@@ -22,10 +22,10 @@ Our current release is for offline workflow examples. However, our front end tha
 Our framework is a Web Socket application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, some data preprocessing must be done, and the data in json format must be generated and imported to MongoDB.
 
 # Data Dependency
-We rely on TAU and the analysis routine to generate a few json(csv) files. The user needs to specify some input settings under `perfvis/js/configure.json`. We summarize as below:
-* `trace.*.json` files for `trace` data
-* `profile.json` file for `profile` data
-* `*.csv` outlier files from analysis routine under `perfvis/outliers`
+The user specifies some input settings under `perfvis/js/configure.json`. As input data, we rely on both TAU and the analysis routine to generate a few json(csv) files.  We summarize them as below:
+* `trace.*.json` files for `trace` data, which contain major trace events `entry`, `exit`, `send` and `receive`.
+* `profile.json` file for `profile` data, which contains various metrics such as `timer` and `counter`.
+* `*.csv` outlier files from analysis routine under `perfvis/outliers`, which contains normal and abnormal function calls of different job IDs.
 
 # Preprocessing
 The `preprocess` directory includes the scripts to generate data for the main routine and import corresponding data into the database.
