@@ -199,7 +199,7 @@ class ScatterPlot{
 		      })
 		      .style("stroke","black")
 		      .style("stroke-width", function(d){
-		      	return (d['class']==0)?0:0.1;
+		      	return (d['class']==0)?0:0;
 		      })
 		      .style("fill-opacity", function(d){
 		      	return (d['class']==0)?0.5:0.8;
