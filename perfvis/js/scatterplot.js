@@ -176,7 +176,7 @@ class ScatterPlot{
 		  console.log("Reduced to: " + data.length);
 
 		  var sizeValue = function(d) { return d["size"];};
-		  var sizeScale = d3.scaleLog().range([3.5, 10]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
+		  var sizeScale = d3.scaleLog().range([3.5, 15]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
 		  var sizeMap = function(d) { return sizeScale(sizeValue(d));};
 		//-------------------------------------------------------
 
@@ -212,7 +212,7 @@ class ScatterPlot{
 		      	return (d['class']==0)?0:0.5;
 		      })
 		      .style("fill-opacity", function(d){
-		      	return (d['class']==0)?0.2:0.8;
+		      	return (d['class']==0)?0.5:0.8;
 		      })
    				.append("svg:title")
 		      .text(function(d){return d.node;});
