@@ -4,9 +4,9 @@ class ScatterPlot{
                     .getBoundingClientRect();
         this.margin = [40, 40, 40, 40]; //top right bottom left (space for label texts)
         var me = this;
-        this.w = bb.right - bb.left;
+        this.w = Math.floor(bb.right) - Math.ceil(bb.left);
 
-        this.width = bb.right - bb.left - 2*this.margin[1] - 2*this.margin[3];
+        this.width = Math.floor(bb.right) - Math.ceil(bb.left) - 2*this.margin[1] - 2*this.margin[3];
         var width = this.width;
 		var height = this.width;
 
@@ -86,12 +86,19 @@ class ScatterPlot{
 
 		d3.csv(fileName, function(error, data) {
 
+		  console.log(data.length);
+		  console.log(data[0]);
+		  console.log(me.width);
+
 		  // change string (from CSV) into number format
 		  data.forEach(function(d) {
 		    d["time_by_lasttime"] = +d["time_by_lasttime"];
 		    d["time_diff"] = +d["time_diff"];
 		//    console.log(d);
 		  });
+
+		  //data = data.filter(function(d) {return d['class']==1;});
+
 
 		var xValue = function(d) { return d["time_by_lasttime"];}, // data -> value
 		    xMap = function(d) { return me.xScale(xValue(d));}; // data -> display
@@ -106,9 +113,66 @@ class ScatterPlot{
 		  me.xAxisSVG.call(me.xAxis)
 		  me.yAxisSVG.call(me.yAxis)
 
+		  //----------------xw---------------------------------
+		// compute 2D histogram of the data
+		var width = 100; //me.width;
+		var height = 100; //me.width;
+		var xScale = d3.scaleLinear().range([0, width]).domain([d3.min(data, xValue), d3.max(data, xValue)]);
+		var yScale = d3.scaleLinear().range([height, 0]).domain([d3.min(data, yValue), d3.max(data, yValue)]);
+		var xRevScale = d3.scaleLinear().domain([0, width]).range([d3.min(data, xValue), d3.max(data, xValue)]);
+		var yRevScale = d3.scaleLinear().domain([height, 0]).range([d3.min(data, yValue), d3.max(data, yValue)]);
+
+		//histogram has one more element in each dimension 
+		var newdata = new Array(width+1); 
+		for (var i = 0; i < width+1; i++) {
+			newdata[i] = [];
+			for (var j = 0; j < height+1; j++) {
+				var item = { "size": 0, "node": [] };
+				newdata[i].push(item);
+			}
+		}
+
+		var fulldata = []; // final data to keep
+		for (var i = 0; i < data.length; i++) {
+			var item = data[i];
+			if (item["class"] == 0) {
+				var xPos = xScale(item["time_by_lasttime"]);
+				var yPos = yScale(item["time_diff"]);
+				//console.log(xPos + ", " + yPos + ": " + item["time_by_lasttime"] + ", " + item["time_diff"]);
+				newdata[Math.floor(xPos)][Math.floor(yPos)]["size"] += 1;
+				newdata[Math.floor(xPos)][Math.floor(yPos)]["node"].push(item["node"]); 
+			} else {
+				console.log("anomaly");
+				item["size"] = 1;
+				fulldata.push(item);
+			}
+		}
+
+		for (var i = 0; i < width+1; i++) {
+			for (var j = 0; j < height+1; j++) {
+				if (newdata[i][j]["size"] != 0) {
+					var item = {}; //initialize!!!
+					//console.log(i + ":" + j + ", " + xRevScale(i) + ":" + yRevScale(j) + ", " + newdata[i][j]["size"]);
+					item["time_by_lasttime"] = xRevScale(i);
+					item["time_diff"] = yRevScale(j);
+					item["size"] = newdata[i][j]["size"];
+					item["class"] = 0;
+					item["node"] = newdata[i][j]["node"].slice(0,5); //only show first 5 nodes
+					fulldata.push(item);
+				}
+			}
+		}
+		data = fulldata;
+		console.log(data.length);
+
+		var sizeValue = function(d) { return d["size"];};
+		var sizeScale = d3.scaleLinear().range([3.5, 35]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
+		var sizeMap = function(d) { return sizeScale(sizeValue(d));};
+		//-------------------------------------------------------
+
 		  // draw dots
 		  svg.selectAll(".dot").remove();
-		  	data.sort(function(a,b) {
+		  data = data.sort(function(a,b) {
           		return d3.ascending(+a.class, +b.class);
       		});
 		  var dots = svg.selectAll(".dot")
@@ -116,7 +180,14 @@ class ScatterPlot{
 
 		  dots.enter().append("circle")
 		      .attr("class", "dot")
-		      .attr("r", 3.5)
+		      .attr("r", function(d) {
+		      	if (d['class']==1){
+		      		return 10;
+		      	}
+		      	else{
+		      		return sizeMap(d);
+		      	}
+		      })
 		      .attr("cx", xMap)
 		      .attr("cy", yMap)
 		      .style("fill", function(d) {
@@ -128,10 +199,10 @@ class ScatterPlot{
 		      })
 		      .style("stroke","black")
 		      .style("stroke-width", function(d){
-		      	return (d['class']==0)?0:0.5;
+		      	return (d['class']==0)?0:0.1;
 		      })
 		      .style("fill-opacity", function(d){
-		      	return (d['class']==0)?0.1:1;
+		      	return (d['class']==0)?0.5:0.8;
 		      })
    				.append("svg:title")
 		      .text(function(d){return d.node;});
