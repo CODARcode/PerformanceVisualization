@@ -86,9 +86,8 @@ class ScatterPlot{
 
 		d3.csv(fileName, function(error, data) {
 
-		  console.log(data.length);
+		  console.log("Input length: " + data.length);
 		  console.log(data[0]);
-		  console.log(me.width);
 
 		  // change string (from CSV) into number format
 		  data.forEach(function(d) {
@@ -99,79 +98,86 @@ class ScatterPlot{
 
 		  //data = data.filter(function(d) {return d['class']==1;});
 
+		/*
 		  data.forEach(function(d) {
 		  	d["time_diff"] /= 10000; //change time from millisecond to 10 microsecond  
+		  	d["time_diff"] += 1;
 		  });
+		*/
+		  var xValue = function(d) { return d["time_by_lasttime"];}, // data -> value
+		      xMap = function(d) { return me.xScale(xValue(d));}; // data -> display
 
-		var xValue = function(d) { return d["time_by_lasttime"];}, // data -> value
-		    xMap = function(d) { return me.xScale(xValue(d));}; // data -> display
-
-		var yValue = function(d) { return d["time_diff"];}, // data -> value
-		    yMap = function(d) { return me.yScale(yValue(d));}; // data -> display
+		  var yValue = function(d) { return d["time_diff"];}, // data -> value
+		      yMap = function(d) { return me.yScale(yValue(d));}; // data -> display
 		
-		// don't want dots overlapping axis, so add in buffer to data domain
-		var xRange = d3.max(data, xValue) - d3.min(data, xValue);
-		var yRange = d3.max(data, yValue) - d3.min(data, yValue);
-		me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
-		me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
-		me.xAxisSVG.call(me.xAxis)
-		me.yAxisSVG.call(me.yAxis)
+		  // don't want dots overlapping axis, so add in buffer to data domain
+		  var xRange = d3.max(data, xValue) - d3.min(data, xValue);
+		  var yRange = d3.max(data, yValue) - d3.min(data, yValue);
+		  me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
+		  me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
+		  me.xAxisSVG.call(me.xAxis)
+		  me.yAxisSVG.call(me.yAxis)
 
 		  //----------------xw---------------------------------
-		// compute 2D histogram of the data
-		var width = 200; //me.width;
-		var height = 200; //me.width;
-		var xScale = d3.scaleLinear().range([0, width]).domain([d3.min(data, xValue), d3.max(data, xValue)]);
-		var yScale = d3.scaleLinear().range([height, 0]).domain([d3.min(data, yValue), d3.max(data, yValue)]);
-		var xRevScale = d3.scaleLinear().domain([0, width]).range([d3.min(data, xValue), d3.max(data, xValue)]);
-		var yRevScale = d3.scaleLinear().domain([height, 0]).range([d3.min(data, yValue), d3.max(data, yValue)]);
+		  // compute 2D histogram of the data
+		  var width = 200; //me.width;
+		  var height = 200; //me.width;
+		  var xScale = d3.scaleLinear().range([0, width]).domain([d3.min(data, xValue), d3.max(data, xValue)]);
+		  var yScale = d3.scaleLinear().range([height, 0]).domain([d3.min(data, yValue), d3.max(data, yValue)]);
+		  var xRevScale = d3.scaleLinear().domain([0, width]).range([d3.min(data, xValue), d3.max(data, xValue)]);
+		  var yRevScale = d3.scaleLinear().domain([height, 0]).range([d3.min(data, yValue), d3.max(data, yValue)]);
 
-		//histogram has one more element in each dimension 
-		var newdata = new Array(width+1); 
-		for (var i = 0; i < width+1; i++) {
-			newdata[i] = [];
-			for (var j = 0; j < height+1; j++) {
-				var item = { "size": 0, "node": [] };
-				newdata[i].push(item);
-			}
-		}
+		  //histogram has one more element in each dimension 
+		  var newdata = new Array(width+1); 
+		  for (var i = 0; i < width+1; i++) {
+			  newdata[i] = [];
+			  for (var j = 0; j < height+1; j++) {
+				  var item = { "size": 0, "node": [] };
+				  newdata[i].push(item);
+		  	  }
+		  }
 
-		var fulldata = []; // final data to keep
-		for (var i = 0; i < data.length; i++) {
-			var item = data[i];
-			if (item["class"] == 0) {
-				var xPos = xScale(item["time_by_lasttime"]);
-				var yPos = yScale(item["time_diff"]);
-				//console.log(xPos + ", " + yPos + ": " + item["time_by_lasttime"] + ", " + item["time_diff"]);
-				newdata[Math.floor(xPos)][Math.floor(yPos)]["size"] += 1;
-				newdata[Math.floor(xPos)][Math.floor(yPos)]["node"].push(item["node"]); 
-			} else {
-				console.log("anomaly");
-				item["size"] = 1;
-				fulldata.push(item);
-			}
-		}
+		  var fulldata = []; // final data to keep
+		  for (var i = 0; i < data.length; i++) {
+			  var item = data[i];
+			  if (item["class"] == 0) {
+				  var xPos = xScale(item["time_by_lasttime"]);
+				  var yPos = yScale(item["time_diff"]);
+				  //console.log(xPos + ", " + yPos + ": " + item["time_by_lasttime"] + ", " + item["time_diff"]);
+				  newdata[Math.floor(xPos)][Math.floor(yPos)]["size"] += 1;
+				  newdata[Math.floor(xPos)][Math.floor(yPos)]["node"].push(item["node"]); 
+			  } else {
+				  //console.log("anomaly");
+				  item["size"] = 1;
+				  fulldata.push(item);
+			  }
+		  }
 
-		for (var i = 0; i < width+1; i++) {
-			for (var j = 0; j < height+1; j++) {
-				if (newdata[i][j]["size"] != 0) {
-					var item = {}; //initialize!!!
-					//console.log(i + ":" + j + ", " + xRevScale(i) + ":" + yRevScale(j) + ", " + newdata[i][j]["size"]);
-					item["time_by_lasttime"] = xRevScale(i);
-					item["time_diff"] = yRevScale(j);
-					item["size"] = newdata[i][j]["size"];
-					item["class"] = 0;
-					item["node"] = newdata[i][j]["node"].slice(0,5); //only show first 5 nodes
-					fulldata.push(item);
-				}
-			}
-		}
-		data = fulldata;
-		console.log(data.length);
+		  for (var i = 0; i < width+1; i++) {
+			  for (var j = 0; j < height+1; j++) {
+				  if (newdata[i][j]["size"] != 0) {
+					  var item = {}; //initialize!!!
+					  //console.log(i + ":" + j + ", " + xRevScale(i) + ":" + yRevScale(j) + ", " + newdata[i][j]["size"]);
+					  item["time_by_lasttime"] = xRevScale(i);
+					  item["time_diff"] = yRevScale(j);
+					  item["size"] = newdata[i][j]["size"];
+					  item["class"] = 0;
+					  if (newdata[i][j]["node"].length > 5) {
+					  	item["node"] = "#" + newdata[i][j]["node"].length;
+					  }
+					  else {
+					  	item["node"] = newdata[i][j]["node"];	
+					  }
+					  fulldata.push(item);
+				  }
+		  	  }
+		  }
+		  data = fulldata;
+		  console.log("Reduced to: " + data.length);
 
-		var sizeValue = function(d) { return d["size"];};
-		var sizeScale = d3.scaleLog().range([5, 35]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
-		var sizeMap = function(d) { return sizeScale(sizeValue(d));};
+		  var sizeValue = function(d) { return d["size"];};
+		  var sizeScale = d3.scaleLog().range([3.5, 10]).domain([d3.min(data, sizeValue), d3.max(data, sizeValue)]);
+		  var sizeMap = function(d) { return sizeScale(sizeValue(d));};
 		//-------------------------------------------------------
 
 		  // draw dots
@@ -186,7 +192,7 @@ class ScatterPlot{
 		      .attr("class", "dot")
 		      .attr("r", function(d) {
 		      	if (d['class']==1){
-		      		return 10;
+		      		return 5;
 		      	}
 		      	else{
 		      		return sizeMap(d);
@@ -203,10 +209,10 @@ class ScatterPlot{
 		      })
 		      .style("stroke","black")
 		      .style("stroke-width", function(d){
-		      	return (d['class']==0)?0:0.3;
+		      	return (d['class']==0)?0:0.5;
 		      })
 		      .style("fill-opacity", function(d){
-		      	return (d['class']==0)?0.3:0.8;
+		      	return (d['class']==0)?0.2:0.8;
 		      })
    				.append("svg:title")
 		      .text(function(d){return d.node;});
