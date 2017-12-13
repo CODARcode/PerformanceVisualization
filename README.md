@@ -42,7 +42,7 @@ This python script generates `summary.json` which will later be imported to Mong
 ```
 In specific, `summary.json` is imported to `summary` collection, `trace.*.json` is imported to `trace_events` collection, `profile.json` is imported to `counters` and `timers` collections respectively.
 
-# Run
+# Execution
 Software execution:
 * Run MongoDB server to enable database access, and connect to our imported data `mongodbdata` where our database including the collections are stored:
 ```
