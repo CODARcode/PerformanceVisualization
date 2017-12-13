@@ -68,6 +68,12 @@ When zooming into certain granularity, the actual function calls are visualized 
 
 ![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/profile.png "Profile")
 
-* **Anomaly view** show the anomaly detection result from the analysis stage. 
+* **Anomaly view** show the anomaly detection result from the analysis stage (Anomaly detection of function calls). 
 
+There are two modes: regular and aggregation modes. The former one plots all the *normal* and *abnormal* calls as small circles in the scatterplot. The latter one aggregates nearby *normal* calls into a single circle where its size reflects the number of calls inside the circle. The plots for *abnormal* calls remain unchanged. In both modes, the anomaly calles are highlighted in colors reflecting the node/core IDs, while the normal ones are in gray. We also support mouse hovering to show the node/core ID of a circle, or its included number of calls when it is an aggregated circle.
+
+Regular mode:
 ![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/anomaly.png "Anomaly")
+
+Aggregated mode:
+![alt text](https://github.com/CODARcode/PerformanceVisualization/blob/master/snapshots/anomaly_aggregation.png "Anomaly when aggregated")
