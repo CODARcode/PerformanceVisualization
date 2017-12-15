@@ -25,7 +25,7 @@ Our framework is a Web Socket application. The front end is implemented in Javas
 The user specifies some input settings under `perfvis/js/configure.json`. As input data, we rely on both TAU and the analysis routine to generate a few json(csv) files.  We summarize them as below:
 * `trace.*.json` files for `trace` data, which contain major trace events `entry`, `exit`, `send` and `receive`.
 * `profile.json` file for `profile` data, which contains various metrics such as `timer` and `counter`.
-* `*.csv` outlier files from analysis routine under `perfvis/outliers`, which contains normal and abnormal function calls of different job IDs.
+* `*.csv` outlier files for anomaly detection, which contains normal and abnormal function calls of different job IDs.
 
 # Preprocessing
 The `preprocess` directory includes the scripts to generate the dependent data for the main routine and import corresponding data into the database.
