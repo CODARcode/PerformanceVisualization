@@ -28,7 +28,7 @@ The user specifies some input settings under `perfvis/js/configure.json`. As inp
 * `*.csv` outlier files from analysis routine under `perfvis/outliers`, which contains normal and abnormal function calls of different job IDs.
 
 # Preprocessing
-The `preprocess` directory includes the scripts to generate data for the main routine and import corresponding data into the database.
+The `preprocess` directory includes the scripts to generate the dependent data for the main routine and import corresponding data into the database.
 
 * Precompute `summary` data for the *overview* panel of the visualization by running:
 ```
@@ -36,11 +36,13 @@ python summary.py
 ```
 This python script generates `summary.json` which will later be imported to MongoDB. 
 
-* Import json files to MongoDB as collections by running the following bash script. Users need to modify the setting (number of json files, etc.) in the script:
+* Obtain the trace and profile json files from Chimbuko (https://github.com/CODARcode/Chimbuko). Import json files to MongoDB as collections by running the following bash script. Users need to modify the setting (number of json files, etc.) in the script:
 ```
 ./import.sh
 ```
 In specific, `summary.json` is imported to `summary` collection, `trace.*.json` is imported to `trace_events` collection, `profile.json` is imported to `counters` and `timers` collections respectively.
+
+* Obtain the csv files from performance analysis (https://github.com/CODARcode/PerformanceAnalysis). Save that to `perfvis/outliers`.
 
 # Execution
 Software execution:
