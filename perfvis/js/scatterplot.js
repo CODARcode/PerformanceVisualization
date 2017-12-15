@@ -59,7 +59,7 @@ class ScatterPlot{
 		      .data(me.color.domain())
 		    .enter().append("g")
 		      .attr("class", "legend")
-		      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+		      .attr("transform", function(d, i) { return "translate(40," + i * 20 + ")"; });
 
 		  // draw legend colored rectangles
 		  legend.append("rect")
@@ -220,8 +220,29 @@ class ScatterPlot{
 		});
 	}
 }
+
+var setupMenu = function(lists){
+	lists.forEach(function(d){
+		var option = document.createElement("li");
+		option.value=d;
+		option.selected="";
+		option.innerHTML= d;
+		$('#dropmenu').append(option);
+	});
+
+	$('.thi li').click(function(e) {
+	    $('#outlier').text(this.innerHTML);
+	    scatterplot.update("../outliers/"+this.innerHTML);
+	});
+}
+
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.open("GET", "anomaly/", true); //"http://localhost:8000/" +
+xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+    	var lists = JSON.parse(xmlhttp.responseText);
+        setupMenu(JSON.parse(xmlhttp.responseText));
+    }
+}
+xmlhttp.send();
 var scatterplot = new ScatterPlot();
-$('.thi li > a').click(function(e) {
-    $('#outlier').text(this.innerHTML);
-    scatterplot.update("../outliers/"+this.innerHTML+".csv");
-});

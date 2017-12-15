@@ -27,6 +27,21 @@ http.createServer(function(request, response) {
         query("trace_events",{$and:[{"node-id": {$in: numArray}}, {$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(strArray[0]),$lte:parseInt(strArray[1])}}]},response);
         //var timestamps = uri.substring(8).split(":");
         //query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
+    } else if (uri.substring(0, 9) == "/anomaly/"){
+
+    //read in anomaly csv filename list
+        var csv_path = process.cwd() + "/outliers";
+        fs.readdir(csv_path, function(err, items) {
+            response.writeHead(200, {
+                "Content-Type": "text/json"
+            });
+            response.end(JSON.stringify(items));
+            for (var i = 0; i < items.length; i++) {
+                console.log(items[i]);
+            }
+        });
+        //var timestamps = uri.substring(8).split(":");
+        //query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
     } else if (uri.substring(0, 10) == "/profiles/"){
         if(uri.substring(10) == "0"){
             query("timers",{},response);
@@ -68,15 +83,6 @@ http.createServer(function(request, response) {
         });
     }
 
-    //read in anomaly csv filename list
-    var csv_path = process.cwd() + "/outliers";
-    fs.readdir(csv_path, function(err, items) {
-        console.log(items.length);
-
-        for (var i = 0; i < items.length; i++) {
-            console.log(items[i]);
-        }
-    });
 
 }).listen(8000, "0.0.0.0"); //listen from public by adding "0.0.0.0"
 
