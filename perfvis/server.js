@@ -68,6 +68,16 @@ http.createServer(function(request, response) {
         });
     }
 
+    //read in anomaly csv filename list
+    var csv_path = process.cwd() + "/outliers";
+    fs.readdir(csv_path, function(err, items) {
+        console.log(items.length);
+
+        for (var i = 0; i < items.length; i++) {
+            console.log(items[i]);
+        }
+    });
+
 }).listen(8000, "0.0.0.0"); //listen from public by adding "0.0.0.0"
 
 
