@@ -2,7 +2,7 @@ class ScatterPlot{
 	constructor(){
         var bb = document.querySelector('#Outlier')
                     .getBoundingClientRect();
-        this.margin = [40, 40, 40, 40]; //top right bottom left (space for label texts)
+        this.margin = [40, 40, 60, 100]; //top right bottom left (space for label texts)
         var me = this;
         this.w = Math.floor(bb.right) - Math.ceil(bb.left);
 
@@ -19,7 +19,7 @@ class ScatterPlot{
 
 		// setup fill color
 		var cValue = function(d) { return d.Manufacturer;};
-		this.color = d3.scaleOrdinal(d3.schemeCategory20b).domain([0,10,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116]);
+		this.color = d3.scaleOrdinal(d3.schemeSet1).domain([0]); //[0,10,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116]);
         this.svg = d3.select("#Outlier")
             .append("svg")
             .attr("width", me.w)
@@ -36,7 +36,8 @@ class ScatterPlot{
 		this.xAxisSVG.append("text")
 		      .attr("class", "label")
 		      .attr("x", width)
-		      .attr("y", 30)
+		      .attr("y", 50)
+		      .attr("font-size", "13px")
 		      .style("text-anchor", "end")
 		      .style("text-anchor", "middle")
 		      .text("time_by_lasttime");
@@ -48,28 +49,29 @@ class ScatterPlot{
 		this.yAxisSVG.append("text")
 		      .attr("class", "label")
 		      .attr("transform", "rotate(-90)")
-		      .attr("y", -30)
+		      .attr("y", -80)
 		      .attr("dy", ".71em")
+		      .attr("font-size", "13px")
 		      .style("text-anchor", "end")
 		      .style("text-anchor", "middle")
 		      .text("time_diff");
 
 		  // draw legend
-		  var legend = this.svg.selectAll(".legend")
+		 this.legend = this.svg.selectAll(".legend")
 		      .data(me.color.domain())
 		    .enter().append("g")
 		      .attr("class", "legend")
 		      .attr("transform", function(d, i) { return "translate(40," + i * 20 + ")"; });
 
 		  // draw legend colored rectangles
-		  legend.append("rect")
+		  this.legend.append("rect")
 		      .attr("x", width - 18)
 		      .attr("width", 18)
 		      .attr("height", 12)
 		      .style("fill", me.color);
 
 		  // draw legend text
-		  legend.append("text")
+		  this.legend.append("text")
 		      .attr("x", width - 24)
 		      .attr("y", 6)
 		      .attr("dy", ".35em")
@@ -89,12 +91,18 @@ class ScatterPlot{
 		  console.log("Input length: " + data.length);
 		  console.log(data[0]);
 
+		  var anormaly_list = [];
 		  // change string (from CSV) into number format
 		  data.forEach(function(d) {
 		    d["time_by_lasttime"] = +d["time_by_lasttime"];
 		    d["time_diff"] = +d["time_diff"];
-		//    console.log(d);
+		    d["node"] = d["node_id"]; 
+			if (d["class"] == 1) {
+				anormaly_list.push(d['node_id']);
+			}
 		  });
+		  console.log(anormaly_list);
+		  me.color = d3.scaleOrdinal(d3.schemeSet1).domain(anormaly_list);
 
 		  //data = data.filter(function(d) {return d['class']==1;});
 
@@ -115,8 +123,11 @@ class ScatterPlot{
 		  var yRange = d3.max(data, yValue) - d3.min(data, yValue);
 		  me.xScale.domain([d3.min(data, xValue)-xRange/100, d3.max(data, xValue)+xRange/100]);
 		  me.yScale.domain([d3.min(data, yValue)-yRange/100, d3.max(data, yValue)+yRange/100]);
-		  me.xAxisSVG.call(me.xAxis)
-		  me.yAxisSVG.call(me.yAxis)
+		  me.xAxisSVG.call(me.xAxis);
+		  me.yAxisSVG.call(me.yAxis);
+
+		  d3.selectAll(".tick text")
+		  	.attr("font-size", "15px");
 
 		  //----------------xw---------------------------------
 		  // compute 2D histogram of the data
@@ -172,7 +183,15 @@ class ScatterPlot{
 				  }
 		  	  }
 		  }
-		  data = fulldata;
+		  var flag = false;
+		  if (flag) { //aggregate
+		  	data = fulldata;	
+		  } else {
+		  	data.forEach(function(d) {
+		  		d['size'] = 1;
+		  	});
+		  }
+		  
 		  console.log("Reduced to: " + data.length);
 
 		  var sizeValue = function(d) { return d["size"];};
@@ -232,7 +251,7 @@ var setupMenu = function(lists){
 
 	$('.thi li').click(function(e) {
 	    $('#outlier').text(this.innerHTML);
-	    scatterplot.update("../outliers/"+this.innerHTML);
+	    scatterplot.update("../outliers/demo/"+this.innerHTML);
 	});
 }
 

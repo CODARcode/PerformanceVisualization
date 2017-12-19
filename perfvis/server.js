@@ -30,15 +30,15 @@ http.createServer(function(request, response) {
     } else if (uri.substring(0, 9) == "/anomaly/"){
 
     //read in anomaly csv filename list
-        var csv_path = process.cwd() + "/outliers";
+        var csv_path = process.cwd() + "/outliers/demo/";
         fs.readdir(csv_path, function(err, items) {
             response.writeHead(200, {
                 "Content-Type": "text/json"
             });
             response.end(JSON.stringify(items));
-            for (var i = 0; i < items.length; i++) {
+            /*for (var i = 0; i < items.length; i++) {
                 console.log(items[i]);
-            }
+            }*/
         });
         //var timestamps = uri.substring(8).split(":");
         //query("trace_events",{$and:[{$or:[{"event-type":"entry"},{"event-type":"exit"}]},{time:{$gte:parseInt(timestamps[0]),$lte:parseInt(timestamps[1])}}]},response);
