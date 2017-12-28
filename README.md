@@ -19,7 +19,7 @@ We provide four levels of details for trace visualization:
 Our current release is for offline workflow examples. However, our front end that contains majority of functionalities is independent and well prepared for online access. The back end storage MongoDB can be replaced when the online data acess API is ready.
 
 # Software Dependency 
-Our framework is a Web Socket application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, some data preprocessing must be done, and the data in json format must be generated and imported to MongoDB.
+Our framework is a web based application. The front end is implemented in Javascript using D3.js library. Node.js is used as back end server that connects to a MongoDB database for data management. Before execution, some data preprocessing must be done, and the data in json format must be generated and imported to MongoDB.
 
 # Data Dependency
 The user specifies some input settings under `perfvis/js/configure.json`. As input data, we rely on both TAU and the analysis routine to generate a few json(csv) files.  We summarize them as below:
